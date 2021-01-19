@@ -17,7 +17,7 @@ import setuptools
 
 setuptools.setup(
     name='ivy-gym',
-    version='0.0.0',
+    version='1.1.1',
     description='Fully differentiable reinforcement learning environments, written in Ivy.',
     author='Ivy Team',
     author_email='ivydl.team@gmail.com',
