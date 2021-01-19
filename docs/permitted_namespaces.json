@@ -1,0 +1,7 @@
+{
+    "ivy_gym.cartpole.": "ivy_gym.",
+    "ivy_gym.mountain_car.": "ivy_gym.",
+    "ivy_gym.pendulum.": "ivy_gym.",
+    "ivy_gym.reacher.": "ivy_gym.",
+    "ivy_gym.swimmer.": "ivy_gym."
+}
