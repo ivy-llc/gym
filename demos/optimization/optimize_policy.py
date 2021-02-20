@@ -2,6 +2,7 @@
 import ivy_gym
 import argparse
 import numpy as np
+from ivy.core.container import Container
 from ivy_demo_utils.framework_utils import choose_random_framework, get_framework_from_str
 
 
@@ -26,17 +27,17 @@ class Policy:
         b2 = f.variable(f.zeros((out_size,)))
 
         # variables
-        self.variables = [w0, w1, w2, b0, b1, b2]
+        self.v = Container({'w0': w0, 'w1': w1, 'w2': w2, 'b0': b0, 'b1': b1, 'b2':  b2})
 
     def call(self, x, variables=None):
         x = self._f.expand_dims(x, 0)
         if variables is not None:
             v = variables
         else:
-            v = self.variables
-        x = self._f.nn.tanh(self._f.nn.linear(x, v[0], v[3]))
-        x = self._f.nn.tanh(self._f.nn.linear(x, v[1], v[4]))
-        return self._f.nn.tanh(self._f.nn.linear(x, v[2], v[5]))[0]
+            v = self.v
+        x = self._f.nn.tanh(self._f.nn.linear(x, v['w0'], v['b0']))
+        x = self._f.nn.tanh(self._f.nn.linear(x, v['w1'], v['b1']))
+        return self._f.nn.tanh(self._f.nn.linear(x, v['w2'], v['b2']))[0]
 
 
 def loss_fn(env, initial_state, policy_callable, steps, f):
@@ -50,8 +51,8 @@ def loss_fn(env, initial_state, policy_callable, steps, f):
 
 
 def train_step(compiled_loss_fn, initial_state, policy, lr, f):
-    loss, grads = f.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.variables)
-    policy.variables = f.gradient_descent_update(policy.variables, grads, lr)
+    loss, grads = f.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
+    policy.v = f.gradient_descent_update(policy.v, grads, lr)
     return -f.reshape(loss, (1,))
 
 
@@ -71,7 +72,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     # compile loss function
     compiled_loss_fn = f.compile_fn(lambda initial_state, pol_vs:
                                     loss_fn(env, initial_state, lambda x: policy.call(x, pol_vs), steps, f),
-                                    example_inputs=[env.get_state(), policy.variables])
+                                    example_inputs=[env.get_state(), policy.v])
 
     # Train
     scores = []
@@ -106,7 +107,7 @@ if __name__ == '__main__':
     parser.add_argument('--env', default='CartPole',
                         choices=['CartPole', 'Pendulum', 'MountainCar', 'Reacher', 'Swimmer'])
     parser.add_argument('--framework', type=str, default=None,
-                        help='which framework to use. Chooses a random framework if unspecified.')
+                        choices=['jax','tensorflow', 'torch', 'mxnd', 'numpy'])
     parser.add_argument('--steps', type=int, default=100)
     parser.add_argument('--iters', type=int, default=10000)
     parser.add_argument('--lr', type=float, default=0.001)
@@ -114,7 +115,10 @@ if __name__ == '__main__':
     parser.add_argument('--log_freq', type=int, default=100)
     parser.add_argument('--vis_freq', type=int, default=1000)
     parsed_args = parser.parse_args()
-    framework = get_framework_from_str(parsed_args.framework)
+    if parsed_args.framework is None:
+        framework = choose_random_framework(excluded=['numpy'])
+    else:
+        framework = get_framework_from_str(parsed_args.framework)
     if parsed_args.framework == 'numpy':
         raise Exception('Invalid framework selection. Numpy does not support auto-differentiation.\n'
                         'This demo involves gradient-based optimization, and so auto-diff is required.\n'

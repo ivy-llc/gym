@@ -2,6 +2,7 @@
 import ivy_gym
 import argparse
 import numpy as np
+from ivy.core.container import Container
 from ivy_demo_utils.framework_utils import choose_random_framework, get_framework_from_str
 
 
@@ -16,8 +17,9 @@ def loss_fn(env, initial_state, logits_in, f):
 
 
 def train_step(compiled_loss_fn, initial_state, logits, lr, f):
-    loss, grads = f.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts[0]), [logits])
-    logits = f.gradient_descent_update([logits], grads, lr)[0]
+    loss, grads = f.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
+                                           Container({'l': logits}))
+    logits = f.gradient_descent_update(Container({'l': logits}), grads, lr)['l']
     return -f.reshape(loss, (1,)), logits
 
 
@@ -79,7 +81,10 @@ if __name__ == '__main__':
     parser.add_argument('--log_freq', type=int, default=100)
     parser.add_argument('--vis_freq', type=int, default=1000)
     parsed_args = parser.parse_args()
-    framework = get_framework_from_str(parsed_args.framework)
+    if parsed_args.framework is None:
+        framework = choose_random_framework(excluded=['numpy'])
+    else:
+        framework = get_framework_from_str(parsed_args.framework)
     if parsed_args.framework == 'numpy':
         raise Exception('Invalid framework selection. Numpy does not support auto-differentiation.\n'
                         'This demo involves gradient-based optimization, and so auto-diff is required.\n'
