@@ -1,7 +1,7 @@
 # global
+import ivy
 import argparse
 import ivy_gym
-import numpy as np
 from ivy_demo_utils.framework_utils import get_framework_from_str, choose_random_framework
 
 
@@ -12,19 +12,21 @@ def main(env_str=None, visualize=True, f=None):
 
     # choose random framework
     f = choose_random_framework() if f is None else f
+    ivy.set_framework(f)
 
     # get environment
-    env = getattr(ivy_gym, env_str)(f=f)
+    env = getattr(ivy_gym, env_str)()
 
     # run environment steps
     env.reset()
     ac_dim = env.action_space.shape[0]
     for _ in range(250):
-        ac = f.random_uniform(-1, 1, (ac_dim,))
+        ac = ivy.random_uniform(-1, 1, (ac_dim,))
         env.step(ac)
         if visualize:
             env.render()
     env.close()
+    ivy.unset_framework()
 
     # message
     print('End of Run Through Demo!')

@@ -2,9 +2,9 @@
 A fish needs to reach a goal location while avoiding urchins.
 """
 
+import ivy
 import gym
 import numpy as np
-from ivy.framework_handler import get_framework as _get_framework
 
 
 # Environment Class #
@@ -17,16 +17,13 @@ class Swimmer(gym.Env):
         'video.frames_per_second': 30
     }
 
-    def __init__(self, num_urchins=5, f=None):  # noqa
+    def __init__(self, num_urchins=5):  # noqa
         """
         Initialize Swimmer environment.
 
         :param num_urchins: Number of urchins.
         :type num_urchins: int, optional
-        :param f: Machine learning framework.
-        :type f: ml_framework, optional
         """
-        self._f = _get_framework(f=f)
         self.num_urchins = num_urchins
         self.dt = 0.05
         self.action_space = gym.spaces.Box(
@@ -43,10 +40,10 @@ class Swimmer(gym.Env):
 
         :return: observation array
         """
-        ob = (self._f.reshape(self.urchin_xys, (-1, 2)), self._f.reshape(self.xy, (-1, 2)),
-              self._f.reshape(self.xy_vel, (-1, 2)), self._f.reshape(self.goal_xy, (-1, 2)))
-        ob = self._f.concatenate(ob, axis=0)
-        return self._f.reshape(ob, (-1,))
+        ob = (ivy.reshape(self.urchin_xys, (-1, 2)), ivy.reshape(self.xy, (-1, 2)),
+              ivy.reshape(self.xy_vel, (-1, 2)), ivy.reshape(self.goal_xy, (-1, 2)))
+        ob = ivy.concatenate(ob, axis=0)
+        return ivy.reshape(ob, (-1,))
 
     def get_reward(self):
         """
@@ -55,13 +52,13 @@ class Swimmer(gym.Env):
         :return: Reward array
         """
         # Goal proximity.
-        rew = self._f.exp(
-            -0.5 * self._f.reduce_sum((self.xy - self.goal_xy) ** 2, -1))
+        rew = ivy.exp(
+            -0.5 * ivy.reduce_sum((self.xy - self.goal_xy) ** 2, -1))
         # Urchins proximity.
-        rew = rew * self._f.reduce_prod(
-            1 - self._f.exp(-30 * self._f.reduce_sum(
+        rew = rew * ivy.reduce_prod(
+            1 - ivy.exp(-30 * ivy.reduce_sum(
                 (self.xy - self.urchin_xys) ** 2, -1)), -1)
-        return self._f.reshape(rew, (1,))
+        return ivy.reshape(rew, (1,))
 
     def get_state(self):
         """
@@ -83,11 +80,11 @@ class Swimmer(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        self.urchin_xys = self._f.random_uniform(
+        self.urchin_xys = ivy.random_uniform(
             -1, 1, (self.num_urchins, 2))
-        self.xy = self._f.random_uniform(-1, 1, (2,))
-        self.xy_vel = self._f.zeros((2,))
-        self.goal_xy = self._f.random_uniform(-1, 1, (2,))
+        self.xy = ivy.random_uniform(-1, 1, (2,))
+        self.xy_vel = ivy.zeros((2,))
+        self.goal_xy = ivy.random_uniform(-1, 1, (2,))
         return self.get_observation()
 
     def step(self, action):
@@ -226,11 +223,11 @@ class Swimmer(gym.Env):
             self.fish_geom.add_attr(self.fish_tr)
             self.viewer.add_geom(self.fish_geom)
 
-        self.goal_tr.set_translation(*self._f.to_numpy(self.goal_xy).tolist())
-        for urchin_tr, (x, y) in zip(self.urchin_trs, self._f.reshape(self.urchin_xys, (5, 2, 1))):
-            urchin_tr.set_translation(self._f.to_numpy(x)[0], self._f.to_numpy(y)[0])
-        self.fish_tr.set_translation(*self._f.to_numpy(self._f.reshape(self.xy, (2,))).tolist())
-        rew = self._f.to_numpy(self.get_reward())[0]
+        self.goal_tr.set_translation(*ivy.to_numpy(self.goal_xy).tolist())
+        for urchin_tr, (x, y) in zip(self.urchin_trs, ivy.reshape(self.urchin_xys, (5, 2, 1))):
+            urchin_tr.set_translation(ivy.to_numpy(x)[0], ivy.to_numpy(y)[0])
+        self.fish_tr.set_translation(*ivy.to_numpy(ivy.reshape(self.xy, (2,))).tolist())
+        rew = ivy.to_numpy(self.get_reward())[0]
         self.fish_geom.set_color(1 - rew, rew, 0.)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

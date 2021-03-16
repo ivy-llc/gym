@@ -3,9 +3,9 @@ https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
 """
 
 # global
+import ivy
 import gym
 import numpy as np
-from ivy.framework_handler import get_framework as _get_framework
 
 
 # noinspection PyAttributeOutsideInit
@@ -15,14 +15,10 @@ class CartPole(gym.Env):
         'video.frames_per_second': 30
     }
 
-    def __init__(self, f=None):  # noqa
+    def __init__(self):  # noqa
         """
         Initialize CartPole environment
-
-        :param f: Machine learning framework.
-        :type f: ml_framework, optional
         """
-        self._f = _get_framework(f=f)
         self.torque_scale = 10.
         self.g = 9.8
         self.dt = 0.02
@@ -43,9 +39,9 @@ class CartPole(gym.Env):
 
         :return: observation array
         """
-        return self._f.concatenate(
-            [self.x, self.x_vel, self._f.cos(self.angle),
-             self._f.sin(self.angle), self.angle_vel], axis=-1)
+        return ivy.concatenate(
+            [self.x, self.x_vel, ivy.cos(self.angle),
+             ivy.sin(self.angle), self.angle_vel], axis=-1)
 
     def get_reward(self):
         """
@@ -54,10 +50,10 @@ class CartPole(gym.Env):
         :return: Reward array
         """
         # Center proximity.
-        rew = self._f.exp(-1 * (self.x ** 2))
+        rew = ivy.exp(-1 * (self.x ** 2))
         # Pole verticality.
-        rew = rew * (self._f.cos(self.angle) + 1) / 2
-        return self._f.reshape(rew[0], (1,))
+        rew = rew * (ivy.cos(self.angle) + 1) / 2
+        return ivy.reshape(rew[0], (1,))
 
     def get_state(self):
         """
@@ -79,16 +75,16 @@ class CartPole(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        self.x = self._f.random_uniform(-1., 1., [1])
-        self.x_vel = self._f.random_uniform(-0.3, 0.3, [1])
-        self.angle = self._f.random_uniform(-np.pi, np.pi, [1])
-        self.angle_vel = self._f.random_uniform(-0.3, 0.3, [1])
+        self.x = ivy.random_uniform(-1., 1., [1])
+        self.x_vel = ivy.random_uniform(-0.3, 0.3, [1])
+        self.angle = ivy.random_uniform(-np.pi, np.pi, [1])
+        self.angle_vel = ivy.random_uniform(-0.3, 0.3, [1])
         return self.get_observation()
 
     def step(self, action):
         force = self.torque_scale * action
-        angle_cos = self._f.cos(self.angle)
-        angle_sin = self._f.sin(self.angle)
+        angle_cos = ivy.cos(self.angle)
+        angle_sin = ivy.sin(self.angle)
         temp = (
             (force + self.pole_mass_length * self.angle_vel ** 2 * angle_sin) /
             self.total_mass)
@@ -183,10 +179,10 @@ class CartPole(gym.Env):
             axle_geom.set_color(0.5, 0.5, 0.5)
             self.viewer.add_geom(axle_geom)
 
-        cart_x = self._f.to_numpy(self.x * scale + screen_width / 2.0)[0]
+        cart_x = ivy.to_numpy(self.x * scale + screen_width / 2.0)[0]
         self.cart_tr.set_translation(cart_x, cart_y)
-        self.pole_tr.set_rotation(-self._f.to_numpy(self.angle)[0])
-        rew = self._f.to_numpy(self.get_reward())[0]
+        self.pole_tr.set_rotation(-ivy.to_numpy(self.angle)[0])
+        rew = ivy.to_numpy(self.get_reward())[0]
         self.pole_geom.set_color(1 - rew, rew, 0.)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

@@ -3,9 +3,9 @@ https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py
 """
 
 # global
+import ivy
 import gym
 import numpy as np
-from ivy.framework_handler import get_framework as _get_framework
 
 
 # noinspection PyAttributeOutsideInit
@@ -15,14 +15,10 @@ class Pendulum(gym.Env):
         'video.frames_per_second': 30
     }
 
-    def __init__(self, f=None):  # noqa
+    def __init__(self):  # noqa
         """
         Initialize Pendulum environment
-
-        :param f: Machine learning framework.
-        :type f: ml_framework, optional
         """
-        self._f = _get_framework(f=f)
         self.torque_scale = 1.
         self.g = 9.8
         self.dt = 0.05
@@ -42,8 +38,8 @@ class Pendulum(gym.Env):
 
         :return: observation array
         """
-        return self._f.concatenate(
-            (self._f.cos(self.angle), self._f.sin(self.angle),
+        return ivy.concatenate(
+            (ivy.cos(self.angle), ivy.sin(self.angle),
              self.angle_vel),
             axis=-1)
 
@@ -54,8 +50,8 @@ class Pendulum(gym.Env):
         :return: Reward array
         """
         # Pole verticality.
-        rew = (self._f.cos(self.angle) + 1) / 2
-        return self._f.reshape(rew, (1,))
+        rew = (ivy.cos(self.angle) + 1) / 2
+        return ivy.reshape(rew, (1,))
 
     def get_state(self):
         """
@@ -77,15 +73,15 @@ class Pendulum(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        self.angle = self._f.random_uniform(-np.pi, np.pi, [1])
-        self.angle_vel = self._f.random_uniform(-1., 1., [1])
+        self.angle = ivy.random_uniform(-np.pi, np.pi, [1])
+        self.angle_vel = ivy.random_uniform(-1., 1., [1])
         return self.get_observation()
 
     def step(self, action):
         action = action * self.torque_scale
 
         angle_acc = (
-            -3 * self.g / (2 * self.l) * self._f.sin(self.angle + np.pi) +
+            -3 * self.g / (2 * self.l) * ivy.sin(self.angle + np.pi) +
             3. / (self.m * self.l ** 2) * action)
 
         self.angle_vel = self.angle_vel + self.dt * angle_acc
@@ -138,8 +134,8 @@ class Pendulum(gym.Env):
             axle.set_color(0., 0., 0.)
             self.viewer.add_geom(axle)
 
-        self.pole_transform.set_rotation(self._f.to_numpy(self.angle)[0] + np.pi / 2)
-        rew = self._f.to_numpy(self.get_reward())[0]
+        self.pole_transform.set_rotation(ivy.to_numpy(self.angle)[0] + np.pi / 2)
+        rew = ivy.to_numpy(self.get_reward())[0]
         self.pole_geom.set_color(1 - rew, rew, 0.)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

@@ -134,13 +134,15 @@ Run Through
 The different environemnts can be visualized via a simple script,
 which executes random motion for 250 steps in one of the environments.
 The script is available in the demos_ folder, as file ``run_through.py``.
-First, we select a random backend framework ``f`` to use for the examples, from the options
-``ivy.jax``, ``ivy.tensorflow``, ``ivy.torch``, ``ivy.mxnd`` or ``ivy.numpy``.
+First, we select a random backend framework to use for the examples, from the options
+``ivy.jax``, ``ivy.tensorflow``, ``ivy.torch``, ``ivy.mxnd`` or ``ivy.numpy``,
+and use this to set the ivy backend framework.
 
 .. code-block:: python
 
+    import ivy
     from ivy_demo_utils.framework_utils import choose_random_framework
-    f = choose_random_framework()
+    ivy.set_framework(choose_random_framework())
 
 We then select an environment to use and execute 250 random actions,
 while rendering the environment after each step.
@@ -150,12 +152,12 @@ choosing from the options ``CartPole``, ``Pendulum``, ``MountainCar``, ``Reacher
 
 .. code-block:: python
 
-    env = getattr(ivy_gym, env_str)(f=f)
+    env = getattr(ivy_gym, env_str)()
 
     env.reset()
     ac_dim = env.action_space.shape[0]
     for _ in range(250):
-        ac = f.random_uniform(-1, 1, (ac_dim,))
+        ac = ivy.random_uniform(-1, 1, (ac_dim,))
         env.step(ac)
         env.render()
 

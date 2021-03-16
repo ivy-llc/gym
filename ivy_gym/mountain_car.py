@@ -4,9 +4,9 @@ mountain_car.py
 """
 
 # global
+import ivy
 import gym
 import numpy as np
-from ivy.framework_handler import get_framework as _get_framework
 
 
 # noinspection PyAttributeOutsideInit
@@ -16,18 +16,14 @@ class MountainCar(gym.Env):
         'video.frames_per_second': 30
     }
 
-    def __init__(self, f=None):  # noqa
+    def __init__(self):  # noqa
         """
         Initialize MountainCar environment
-
-        :param f: Machine learning framework.
-        :type f: ml_framework, optional
         """
-        self._f = _get_framework(f=f)
         self.torque_scale = 3.
         self.g = 9.8
         self.dt = 0.02
-        self.goal_x = self._f.array([0.45])
+        self.goal_x = ivy.array([0.45])
         self.action_space = gym.spaces.Box(-1., 1., [1], np.float32)
         high = np.array([np.inf, np.inf], dtype=np.float32)
         self.observation_space = gym.spaces.Box(-high, high, dtype=np.float32)
@@ -40,7 +36,7 @@ class MountainCar(gym.Env):
 
         :return: observation array
         """
-        return self._f.concatenate([self.x, self.x_vel], axis=-1)
+        return ivy.concatenate([self.x, self.x_vel], axis=-1)
 
     def get_reward(self):
         """
@@ -49,7 +45,7 @@ class MountainCar(gym.Env):
         :return: Reward array
         """
         # Goal proximity.
-        return self._f.reshape(self._f.exp(-5 * ((self.x - self.goal_x) ** 2)), (1,))
+        return ivy.reshape(ivy.exp(-5 * ((self.x - self.goal_x) ** 2)), (1,))
 
     def get_state(self):
         """
@@ -71,18 +67,19 @@ class MountainCar(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        self.x = self._f.random_uniform(-0.9, -0.2, [1])
-        self.x_vel = self._f.zeros([1])
+        self.x = ivy.random_uniform(-0.9, -0.2, [1])
+        self.x_vel = ivy.zeros([1])
         return self.get_observation()
 
     def step(self, action):
-        x_acc = action * self.torque_scale - self.g * self._f.cos(3 * self.x)
+        x_acc = action * self.torque_scale - self.g * ivy.cos(3 * self.x)
         self.x_vel = self.x_vel + self.dt * x_acc
         self.x = self.x + self.dt * self.x_vel
         return self.get_observation(), self.get_reward(), False, {}
 
-    def _height(self, xs):
-        return self._f.sin(3 * xs) * 0.45 + 0.55
+    @staticmethod
+    def _height(xs):
+        return ivy.sin(3 * xs) * 0.45 + 0.55
 
     def render(self, mode='human'):
         """
@@ -126,9 +123,9 @@ class MountainCar(gym.Env):
             self.viewer = rendering.Viewer(screen_width, screen_height)
 
             # Track.
-            xs = self._f.linspace(x_min, x_max, 100)
+            xs = ivy.linspace(x_min, x_max, 100)
             ys = self._height(xs)
-            xys = list((self._f.to_numpy(xt).item(), self._f.to_numpy(yt).item())
+            xys = list((ivy.to_numpy(xt).item(), ivy.to_numpy(yt).item())
                        for xt, yt in zip((xs - x_min) * scale, ys * scale))
             self.track = rendering.make_polyline(xys)
             self.track.set_linewidth(2)
@@ -160,8 +157,8 @@ class MountainCar(gym.Env):
             self.viewer.add_geom(back_wheel)
 
             # Flag.
-            flag_x = (self._f.to_numpy(self.goal_x)[0] - x_min) * scale
-            flagy_y1 = self._f.to_numpy(self._height(self.goal_x))[0] * scale
+            flag_x = (ivy.to_numpy(self.goal_x)[0] - x_min) * scale
+            flagy_y1 = ivy.to_numpy(self._height(self.goal_x))[0] * scale
             flagy_y2 = flagy_y1 + 50
             flagpole = rendering.Line((flag_x, flagy_y1), (flag_x, flagy_y2))
             self.viewer.add_geom(flagpole)
@@ -172,9 +169,9 @@ class MountainCar(gym.Env):
             self.viewer.add_geom(flag)
 
         self.car_tr.set_translation(
-            (self._f.to_numpy(self.x)[0] - x_min) * scale, self._f.to_numpy(self._height(self.x))[0] * scale)
-        self.car_tr.set_rotation(self._f.to_numpy(self._f.cos(3 * self.x))[0])
-        rew = self._f.to_numpy(self.get_reward()).item()
+            (ivy.to_numpy(self.x)[0] - x_min) * scale, ivy.to_numpy(self._height(self.x))[0] * scale)
+        self.car_tr.set_rotation(ivy.to_numpy(ivy.cos(3 * self.x))[0])
+        rew = ivy.to_numpy(self.get_reward()).item()
         self.car_geom.set_color(1 - rew, rew, 0.)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')

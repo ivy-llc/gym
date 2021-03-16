@@ -1,4 +1,5 @@
 # global
+import ivy
 import ivy_gym
 import argparse
 import numpy as np
@@ -6,39 +7,39 @@ from ivy.core.container import Container
 from ivy_demo_utils.framework_utils import choose_random_framework, get_framework_from_str
 
 
-def loss_fn(env, initial_state, logits_in, f):
+def loss_fn(env, initial_state, logits_in):
     env.set_state(initial_state)
-    score = f.array([0.])
-    for logs_ in f.unstack(logits_in, 0):
-        ac = f.tanh(logs_)
+    score = ivy.array([0.])
+    for logs_ in ivy.unstack(logits_in, 0):
+        ac = ivy.tanh(logs_)
         rew = env.step(ac)[1]
         score = score + rew
     return -score[0]
 
 
-def train_step(compiled_loss_fn, initial_state, logits, lr, f):
-    loss, grads = f.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
-                                           Container({'l': logits}))
-    logits = f.gradient_descent_update(Container({'l': logits}), grads, lr)['l']
-    return -f.reshape(loss, (1,)), logits
+def train_step(compiled_loss_fn, initial_state, logits, lr):
+    loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
+                                             Container({'l': logits}))
+    logits = ivy.gradient_descent_update(Container({'l': logits}), grads, lr)['l']
+    return -ivy.reshape(loss, (1,)), logits
 
 
 def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None):
 
     # config
     f = choose_random_framework(excluded=['numpy']) if f is None else f
-    f.seed(seed)
-    env = getattr(ivy_gym, env_str)(f=f)
+    ivy.set_framework(f)
+    env = getattr(ivy_gym, env_str)()
     env.reset()
     starting_state = env.get_state()
 
     # trajectory parameters
     ac_dim = env.action_space.shape[0]
-    logits = f.variable(f.random_uniform(-2, 2, (steps, ac_dim)))
+    logits = ivy.variable(f.random_uniform(-2, 2, (steps, ac_dim)))
 
     # compile loss function
-    compiled_loss_fn = f.compile_fn(lambda initial_state, lgts: loss_fn(env, initial_state, lgts, f),
-                                    example_inputs=[starting_state, logits])
+    compiled_loss_fn = ivy.compile_fn(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
+                                      False, example_inputs=[starting_state, logits])
 
     # Train
     scores = []
@@ -47,23 +48,24 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
         if iteration % vis_freq == 0 and visualize:
             env.set_state(starting_state)
             env.render()
-            for logs in f.unstack(logits, axis=0):
-                ac = f.tanh(logs)
+            for logs in ivy.unstack(logits, axis=0):
+                ac = ivy.tanh(logs)
                 env.step(ac)
                 env.render()
 
         env.set_state(starting_state)
         if iteration == 0:
             print('\nCompiling loss function for {} environment steps... This may take a while...\n'.format(steps))
-        score, logits = train_step(compiled_loss_fn, starting_state, logits, lr, f)
+        score, logits = train_step(compiled_loss_fn, starting_state, logits, lr)
         if iteration == 0:
             print('\nLoss function compiled!\n')
-        print('iteration {} score {}'.format(iteration, f.to_numpy(score).item()))
+        print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
         scores.append(f.to_numpy(score)[0])
 
         if len(scores) == log_freq:
             print('\nIterations: {} Mean Score: {}\n'.format(iteration + 1, np.mean(scores)))
             scores.clear()
+    ivy.unset_framework()
 
 
 if __name__ == '__main__':

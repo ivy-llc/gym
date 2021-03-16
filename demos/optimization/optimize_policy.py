@@ -1,4 +1,5 @@
 # global
+import ivy
 import ivy_gym
 import argparse
 import numpy as np
@@ -8,41 +9,38 @@ from ivy_demo_utils.framework_utils import choose_random_framework, get_framewor
 
 class Policy:
 
-    def __init__(self, in_size, out_size, f):
-
-        # framework
-        self._f = f
+    def __init__(self, in_size, out_size):
 
         # weights
         w0lim = (6 / (64 + in_size)) ** 0.5
-        w0 = f.variable(f.random_uniform(-w0lim, w0lim, (64, in_size)))
+        w0 = ivy.variable(ivy.random_uniform(-w0lim, w0lim, (64, in_size)))
         w1lim = (6 / (64 + 64)) ** 0.5
-        w1 = f.variable(f.random_uniform(-w1lim, w1lim, (64, 64)))
+        w1 = ivy.variable(ivy.random_uniform(-w1lim, w1lim, (64, 64)))
         w2lim = (6 / (out_size + 64)) ** 0.5
-        w2 = f.variable(f.random_uniform(-w2lim, w2lim, (out_size, 64)))
+        w2 = ivy.variable(ivy.random_uniform(-w2lim, w2lim, (out_size, 64)))
 
         # biases
-        b0 = f.variable(f.zeros((64,)))
-        b1 = f.variable(f.zeros((64,)))
-        b2 = f.variable(f.zeros((out_size,)))
+        b0 = ivy.variable(ivy.zeros((64,)))
+        b1 = ivy.variable(ivy.zeros((64,)))
+        b2 = ivy.variable(ivy.zeros((out_size,)))
 
         # variables
         self.v = Container({'w0': w0, 'w1': w1, 'w2': w2, 'b0': b0, 'b1': b1, 'b2':  b2})
 
     def call(self, x, variables=None):
-        x = self._f.expand_dims(x, 0)
+        x = ivy.expand_dims(x, 0)
         if variables is not None:
             v = variables
         else:
             v = self.v
-        x = self._f.nn.tanh(self._f.nn.linear(x, v['w0'], v['b0']))
-        x = self._f.nn.tanh(self._f.nn.linear(x, v['w1'], v['b1']))
-        return self._f.nn.tanh(self._f.nn.linear(x, v['w2'], v['b2']))[0]
+        x = ivy.nn.tanh(ivy.nn.linear(x, v['w0'], v['b0']))
+        x = ivy.nn.tanh(ivy.nn.linear(x, v['w1'], v['b1']))
+        return ivy.nn.tanh(ivy.nn.linear(x, v['w2'], v['b2']))[0]
 
 
 def loss_fn(env, initial_state, policy_callable, steps, f):
     obs = env.set_state(initial_state)
-    score = f.array([0.])
+    score = ivy.array([0.])
     for step in range(steps):
         ac = policy_callable(obs)
         obs, rew, _, _ = env.step(ac)
@@ -51,8 +49,8 @@ def loss_fn(env, initial_state, policy_callable, steps, f):
 
 
 def train_step(compiled_loss_fn, initial_state, policy, lr, f):
-    loss, grads = f.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
-    policy.v = f.gradient_descent_update(policy.v, grads, lr)
+    loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
+    policy.v = ivy.gradient_descent_update(policy.v, grads, lr)
     return -f.reshape(loss, (1,))
 
 
@@ -60,19 +58,19 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
 
     # config
     f = choose_random_framework(excluded=['numpy']) if f is None else f
-    f.seed(seed)
-    env = getattr(ivy_gym, env_str)(f=f)
+    ivy.seed(seed)
+    env = getattr(ivy_gym, env_str)()
     starting_obs = env.reset()
 
     # policy
     in_size = starting_obs.shape[0]
     ac_dim = env.action_space.shape[0]
-    policy = Policy(in_size, ac_dim, f)
+    policy = Policy(in_size, ac_dim)
 
     # compile loss function
-    compiled_loss_fn = f.compile_fn(lambda initial_state, pol_vs:
-                                    loss_fn(env, initial_state, lambda x: policy.call(x, pol_vs), steps, f),
-                                    example_inputs=[env.get_state(), policy.v])
+    compiled_loss_fn = ivy.compile_fn(lambda initial_state, pol_vs:
+                                      loss_fn(env, initial_state, lambda x: policy.call(x, pol_vs), steps, f),
+                                      False, example_inputs=[env.get_state(), policy.v])
 
     # Train
     scores = []
@@ -92,8 +90,8 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
         score = train_step(compiled_loss_fn, env.get_state(), policy, lr, f)
         if iteration == 0:
             print('\nLoss function compiled!\n')
-        print('iteration {} score {}'.format(iteration, f.to_numpy(score).item()))
-        scores.append(f.to_numpy(score)[0])
+        print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
+        scores.append(ivy.to_numpy(score)[0])
 
         if len(scores) == log_freq:
             print('\nIterations: {} Mean Score: {}\n'.format(iteration + 1, np.mean(scores)))
@@ -107,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument('--env', default='CartPole',
                         choices=['CartPole', 'Pendulum', 'MountainCar', 'Reacher', 'Swimmer'])
     parser.add_argument('--framework', type=str, default=None,
-                        choices=['jax','tensorflow', 'torch', 'mxnd', 'numpy'])
+                        choices=['jax', 'tensorflow', 'torch', 'mxnd', 'numpy'])
     parser.add_argument('--steps', type=int, default=100)
     parser.add_argument('--iters', type=int, default=10000)
     parser.add_argument('--lr', type=float, default=0.001)

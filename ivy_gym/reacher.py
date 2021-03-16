@@ -1,9 +1,9 @@
 """Reacher task."""
 
 # global
+import ivy
 import gym
 import numpy as np
-from ivy.framework_handler import get_framework as _get_framework
 
 
 # noinspection PyAttributeOutsideInit
@@ -13,16 +13,12 @@ class Reacher(gym.Env):
         'video.frames_per_second': 30
     }
 
-    def __init__(self, num_joints=2, f=None):  # noqa
+    def __init__(self, num_joints=2):  # noqa
         """
         Initialize Reacher environment
-
         :param num_joints: Number of joints in reacher.
         :type num_joints: int, optional
-        :param f: Machine learning framework.
-        :type f: ml_framework, optional
         """
-        self._f = _get_framework(f=f)
         self.num_joints = num_joints
         self.torque_scale = 1.
         self.dt = 0.05
@@ -40,10 +36,10 @@ class Reacher(gym.Env):
 
         :return: observation array
         """
-        ob = (self._f.reshape(self._f.cos(self.angles), (1, 2)), self._f.reshape(self._f.sin(self.angles), (1, 2)),
-              self._f.reshape(self.angle_vels, (1, 2)), self._f.reshape(self.goal_xy, (1, 2)))
-        ob = self._f.concatenate(ob, axis=0)
-        return self._f.reshape(ob, (-1,))
+        ob = (ivy.reshape(ivy.cos(self.angles), (1, 2)), ivy.reshape(ivy.sin(self.angles), (1, 2)),
+              ivy.reshape(self.angle_vels, (1, 2)), ivy.reshape(self.goal_xy, (1, 2)))
+        ob = ivy.concatenate(ob, axis=0)
+        return ivy.reshape(ob, (-1,))
 
     def get_reward(self):
         """
@@ -52,11 +48,11 @@ class Reacher(gym.Env):
         :return: Reward array
         """
         # Goal proximity.
-        x = self._f.reduce_sum(self._f.cos(self.angles), -1)
-        y = self._f.reduce_sum(self._f.sin(self.angles), -1)
-        xy = self._f.concatenate([self._f.expand_dims(x, 0), self._f.expand_dims(y, 0)], axis=0)
-        rew = self._f.reshape(self._f.exp(-1 * self._f.reduce_sum((xy - self.goal_xy) ** 2, -1)), (-1,))
-        return self._f.reduce_mean(rew, axis=0, keepdims=True)
+        x = ivy.reduce_sum(ivy.cos(self.angles), -1)
+        y = ivy.reduce_sum(ivy.sin(self.angles), -1)
+        xy = ivy.concatenate([ivy.expand_dims(x, 0), ivy.expand_dims(y, 0)], axis=0)
+        rew = ivy.reshape(ivy.exp(-1 * ivy.reduce_sum((xy - self.goal_xy) ** 2, -1)), (-1,))
+        return ivy.reduce_mean(rew, axis=0, keepdims=True)
 
     def get_state(self):
         """
@@ -78,10 +74,10 @@ class Reacher(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        self.angles = self._f.random_uniform(-np.pi, np.pi, [self.num_joints])
-        self.angle_vels = self._f.random_uniform(
+        self.angles = ivy.random_uniform(-np.pi, np.pi, [self.num_joints])
+        self.angle_vels = ivy.random_uniform(
             -1, 1, [self.num_joints])
-        self.goal_xy = self._f.random_uniform(
+        self.goal_xy = ivy.random_uniform(
             -self.num_joints, self.num_joints, [2])
         return self.get_observation()
 
@@ -156,16 +152,16 @@ class Reacher(gym.Env):
             self.end_geom.add_attr(self.end_tr)
             self.viewer.add_geom(self.end_geom)
 
-        self.goal_tr.set_translation(*self._f.to_numpy(self.goal_xy).tolist())
+        self.goal_tr.set_translation(*ivy.to_numpy(self.goal_xy).tolist())
 
         x, y = 0., 0.
-        for segment_tr, angle in zip(self.segment_trs, self._f.reshape(self.angles, (-1, 1))):
-            segment_tr.set_rotation(self._f.to_numpy(angle)[0])
+        for segment_tr, angle in zip(self.segment_trs, ivy.reshape(self.angles, (-1, 1))):
+            segment_tr.set_rotation(ivy.to_numpy(angle)[0])
             segment_tr.set_translation(x, y)
-            x = self._f.to_numpy(x + self._f.cos(self._f.expand_dims(angle, 0))[0])[0]
-            y = self._f.to_numpy(y + self._f.sin(self._f.expand_dims(angle, 0))[0])[0]
+            x = ivy.to_numpy(x + ivy.cos(ivy.expand_dims(angle, 0))[0])[0]
+            y = ivy.to_numpy(y + ivy.sin(ivy.expand_dims(angle, 0))[0])[0]
         self.end_tr.set_translation(x, y)
-        rew = self._f.to_numpy(self.get_reward())[0]
+        rew = ivy.to_numpy(self.get_reward())[0]
         self.end_geom.set_color(1 - rew, rew, 0.)
 
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
