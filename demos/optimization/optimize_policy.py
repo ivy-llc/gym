@@ -38,11 +38,11 @@ class Policy:
         return ivy.nn.tanh(ivy.nn.linear(x, v['w2'], v['b2']))[0]
 
 
-def loss_fn(env, initial_state, policy_callable, steps, f):
+def loss_fn(env, initial_state, policy, v, steps):
     obs = env.set_state(initial_state)
     score = ivy.array([0.])
     for step in range(steps):
-        ac = policy_callable(obs)
+        ac = policy.call(obs, v)
         obs, rew, _, _ = env.step(ac)
         score = score + rew
     return -score[0]
@@ -69,7 +69,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
 
     # compile loss function
     compiled_loss_fn = ivy.compile_fn(lambda initial_state, pol_vs:
-                                      loss_fn(env, initial_state, lambda x: policy.call(x, pol_vs), steps, f),
+                                      loss_fn(env, initial_state, policy, pol_vs, steps),
                                       False, example_inputs=[env.get_state(), policy.v])
 
     # Train
