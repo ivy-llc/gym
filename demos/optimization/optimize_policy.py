@@ -3,46 +3,29 @@ import ivy
 import ivy_gym
 import argparse
 import numpy as np
-from ivy.core.container import Container
 from ivy_demo_utils.framework_utils import choose_random_framework, get_framework_from_str
 
 
-class Policy:
+class Policy(ivy.Module):
 
-    def __init__(self, in_size, out_size):
+    def __init__(self, in_size, out_size, hidden_size=64):
+        self._linear0 = ivy.Linear(in_size, hidden_size)
+        self._linear1 = ivy.Linear(hidden_size, hidden_size)
+        self._linear2 = ivy.Linear(hidden_size, out_size)
+        ivy.Module.__init__(self)
 
-        # weights
-        w0lim = (6 / (64 + in_size)) ** 0.5
-        w0 = ivy.variable(ivy.random_uniform(-w0lim, w0lim, (64, in_size)))
-        w1lim = (6 / (64 + 64)) ** 0.5
-        w1 = ivy.variable(ivy.random_uniform(-w1lim, w1lim, (64, 64)))
-        w2lim = (6 / (out_size + 64)) ** 0.5
-        w2 = ivy.variable(ivy.random_uniform(-w2lim, w2lim, (out_size, 64)))
-
-        # biases
-        b0 = ivy.variable(ivy.zeros((64,)))
-        b1 = ivy.variable(ivy.zeros((64,)))
-        b2 = ivy.variable(ivy.zeros((out_size,)))
-
-        # variables
-        self.v = Container({'w0': w0, 'w1': w1, 'w2': w2, 'b0': b0, 'b1': b1, 'b2':  b2})
-
-    def call(self, x, variables=None):
+    def _forward(self, x):
         x = ivy.expand_dims(x, 0)
-        if variables is not None:
-            v = variables
-        else:
-            v = self.v
-        x = ivy.nn.tanh(ivy.nn.linear(x, v['w0'], v['b0']))
-        x = ivy.nn.tanh(ivy.nn.linear(x, v['w1'], v['b1']))
-        return ivy.nn.tanh(ivy.nn.linear(x, v['w2'], v['b2']))[0]
+        x = ivy.tanh(self._linear0(x, v=self.v.linear0))
+        x = ivy.tanh(self._linear1(x, v=self.v.linear1))
+        return ivy.tanh(self._linear2(x, v=self.v.linear2))[0]
 
 
 def loss_fn(env, initial_state, policy, v, steps):
     obs = env.set_state(initial_state)
     score = ivy.array([0.])
     for step in range(steps):
-        ac = policy.call(obs, v)
+        ac = policy(obs, v=v)
         obs, rew, _, _ = env.step(ac)
         score = score + rew
     return -score[0]
@@ -80,7 +63,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
             obs = env.reset()
             env.render()
             for _ in range(steps):
-                ac = policy.call(obs)
+                ac = policy(obs)
                 obs, _, _, _ = env.step(ac)
                 env.render()
 
