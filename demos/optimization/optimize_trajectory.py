@@ -17,10 +17,10 @@ def loss_fn(env, initial_state, logits_in):
     return -score[0]
 
 
-def train_step(compiled_loss_fn, initial_state, logits, lr):
+def train_step(compiled_loss_fn, optimizer, initial_state, logits):
     loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
                                              Container({'l': logits}))
-    logits = ivy.gradient_descent_update(Container({'l': logits}), grads, lr)['l']
+    logits = optimizer.step(Container({'l': logits}), grads)['l']
     return -ivy.reshape(loss, (1,)), logits
 
 
@@ -41,7 +41,10 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     compiled_loss_fn = ivy.compile_fn(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
                                       False, example_inputs=[starting_state, logits])
 
-    # Train
+    # optimizer
+    optimizer = ivy.Adam(lr=lr)
+
+    # train
     scores = []
     for iteration in range(iters):
 
@@ -56,7 +59,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
         env.set_state(starting_state)
         if iteration == 0:
             print('\nCompiling loss function for {} environment steps... This may take a while...\n'.format(steps))
-        score, logits = train_step(compiled_loss_fn, starting_state, logits, lr)
+        score, logits = train_step(compiled_loss_fn, optimizer, starting_state, logits)
         if iteration == 0:
             print('\nLoss function compiled!\n')
         print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
