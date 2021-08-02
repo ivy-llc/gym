@@ -29,6 +29,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     # config
     f = choose_random_framework(excluded=['numpy']) if f is None else f
     ivy.set_framework(f)
+    ivy.seed(seed)
     env = getattr(ivy_gym, env_str)()
     env.reset()
     starting_state = env.get_state()
