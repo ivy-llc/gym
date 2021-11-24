@@ -5,12 +5,12 @@ Collection of tests for ivy gym demos
 # global
 import pytest
 import ivy.jax
-import ivy.mxnd
+import ivy.mxnet
 import ivy.tensorflow
 import ivy.torch
 import ivy_tests.helpers as helpers
 
-FWS = [ivy.jax, ivy.mxnd, ivy.tensorflow, ivy.torch]
+FWS = [ivy.jax, ivy.mxnet, ivy.tensorflow, ivy.torch]
 
 
 @pytest.mark.parametrize(

@@ -39,8 +39,8 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     logits = ivy.variable(f.random_uniform(-2, 2, (steps, ac_dim)))
 
     # compile loss function
-    compiled_loss_fn = ivy.compile_fn(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
-                                      False, example_inputs=[starting_state, logits])
+    compiled_loss_fn = ivy.compile(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
+                                   False, example_inputs=[starting_state, logits])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)

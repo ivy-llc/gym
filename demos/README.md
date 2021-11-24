@@ -37,7 +37,7 @@ docker pull ivydl/ivy-gym:latest
 All demos can be run by executing the python scripts directly.
 If a demo script is run without command line arguments, then a random backend framework will be selected from those installed.
 Alternatively, the `--framework` argument can be used to manually specify a framework from the options
-`jax`, `tensorflow`, `torch`, `mxnd` or `numpy`.
+`jax`, `tensorflow`, `torch`, `mxnet` or `numpy`.
 
 By default, the demos all use the `CartPole` environment, but this can be changed using the `--env` argument,
 choosing from the options `CartPole`, `Pendulum`, `MountainCar`, `Reacher` or `Swimmer`.

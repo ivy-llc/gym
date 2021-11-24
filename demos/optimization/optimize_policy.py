@@ -52,9 +52,9 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     policy = Policy(in_size, ac_dim)
 
     # compile loss function
-    compiled_loss_fn = ivy.compile_fn(lambda initial_state, pol_vs:
-                                      loss_fn(env, initial_state, policy, pol_vs, steps),
-                                      False, example_inputs=[env.get_state(), policy.v])
+    compiled_loss_fn = ivy.compile(lambda initial_state, pol_vs:
+                                   loss_fn(env, initial_state, policy, pol_vs, steps),
+                                   False, example_inputs=[env.get_state(), policy.v])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     parser.add_argument('--env', default='CartPole',
                         choices=['CartPole', 'Pendulum', 'MountainCar', 'Reacher', 'Swimmer'])
     parser.add_argument('--framework', type=str, default=None,
-                        choices=['jax', 'tensorflow', 'torch', 'mxnd', 'numpy'])
+                        choices=['jax', 'tensorflow', 'torch', 'mxnet', 'numpy'])
     parser.add_argument('--steps', type=int, default=100)
     parser.add_argument('--iters', type=int, default=10000)
     parser.add_argument('--lr', type=float, default=0.001)

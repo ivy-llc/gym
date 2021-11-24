@@ -4,7 +4,7 @@ Collection of tests for differentiable gym environments written with Ivy.
 
 # global
 import ivy.jax
-import ivy.mxnd
+import ivy.mxnet
 import ivy.numpy
 import ivy.tensorflow
 import ivy.torch
@@ -16,7 +16,7 @@ from ivy_gym.pendulum import Pendulum
 from ivy_gym.reacher import Reacher
 from ivy_gym.swimmer import Swimmer
 
-FWS = [ivy.jax, ivy.mxnd, ivy.numpy, ivy.tensorflow, ivy.torch]
+FWS = [ivy.jax, ivy.mxnet, ivy.numpy, ivy.tensorflow, ivy.torch]
 
 
 def _test_env(env):
