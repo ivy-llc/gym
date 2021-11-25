@@ -14,6 +14,12 @@ RUN git clone https://github.com/ivy-dl/demo-utils && \
     cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
     python3 setup.py develop --no-deps
 
+# Install Ivy Gym
+RUN git clone https://github.com/ivy-dl/gym && \
+    cd gym && \
+    cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
+    python3 setup.py develop --no-deps
+
 COPY requirements.txt /
 RUN cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin
 
