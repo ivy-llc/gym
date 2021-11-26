@@ -19,7 +19,7 @@ def test_demo_run_through(env, dev_str, f, call):
     if call in [helpers.np_call, helpers.tf_graph_call]:
         # numpy does not support gradients, and demo compiles already, so no need to use tf_graph_call
         pytest.skip()
-    from demos.run_through import main
+    from ivy_gym_demos.run_through import main
     main(env, visualize=False, f=f)
 
 
@@ -29,7 +29,7 @@ def test_demo_optimize_trajectory(env, dev_str, f, call):
     if call in [helpers.np_call, helpers.tf_graph_call]:
         # numpy does not support gradients, and demo compiles already, so no need to use tf_graph_call
         pytest.skip()
-    from demos.optimization.optimize_trajectory import main
+    from ivy_gym_demos.optimization.optimize_trajectory import main
     main(env, steps=1, iters=1, lr=0.1, seed=0, visualize=False, f=f)
 
 
@@ -39,5 +39,5 @@ def test_demo_optimize_policy(env, dev_str, f, call):
     if call in [helpers.np_call, helpers.tf_graph_call]:
         # numpy does not support gradients, and demo compiles already, so no need to use tf_graph_call
         pytest.skip()
-    from demos.optimization.optimize_policy import main
+    from ivy_gym_demos.optimization.optimize_policy import main
     main(env, steps=1, iters=1, lr=0.1, seed=0, visualize=False, f=f)
