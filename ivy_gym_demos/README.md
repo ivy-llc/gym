@@ -18,7 +18,7 @@ For a local installation, first install the dependencies:
 ```bash
 cd ~/ivy_gym
 python3 -m pip install -r requirements.txt
-cd ~/ivy_gym/demos
+cd ~/ivy_gym/ivy_gym_demos
 python3 -m pip install -r requirements.txt
 ```
 
@@ -50,7 +50,7 @@ be run with python directly for local installations.
 For a basic run through each of the gym environments:
 
 ```bash
-cd ~/ivy_gym/demos
+cd ~/ivy_gym/ivy_gym_demos
 ./run_demo.sh run_through
 ```
 
@@ -70,7 +70,7 @@ In this demo, we show trajectories on each of the five ivy gym environments duri
 The optimization iteration is shown in the bottom right, along with the step in the environment.
 
 ```bash
-cd ~/ivy_gym/demos
+cd ~/ivy_gym/ivy_gym_demos
 ./run_demo.sh optimization.optimize_trajectory
 ```
 
@@ -86,7 +86,7 @@ In this demo, we show trajectories on each of the five ivy gym environments duri
 The optimization iteration is shown in the bottom right, along with the step in the environment.
 
 ```bash
-cd ~/ivy_gym/demos
+cd ~/ivy_gym/ivy_gym_demos
 ./run_demo.sh optimization.optimize_policy
 ```
 Example output is given below:

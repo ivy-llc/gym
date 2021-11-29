@@ -112,8 +112,8 @@ Click on the icons below for their respective github pages.
 
 Ivy gym can be installed like so: ``pip install ivy-gym``
 
-.. _demos: https://github.com/ivy-dl/gym/tree/master/demos
-.. _optimization: https://github.com/ivy-dl/gym/tree/master/demos/optimization
+.. _demos: https://github.com/ivy-dl/gym/tree/master/ivy_gym_demos
+.. _optimization: https://github.com/ivy-dl/gym/tree/master/ivy_gym_demos/optimization
 
 To quickly see the different environments provided, we suggest you check out the demos_!
 We suggest you start by running the script ``run_through.py``,
