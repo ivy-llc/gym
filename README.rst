@@ -72,7 +72,7 @@ as well as a new Swimmer task, which illustrates the simplicity of creating new 
 The differentiable nature of the environments means that the cumulative reward can be directly optimized for in a supervised manner,
 without need for reinforcement learning, which is the de facto approach for optimizing cumulative rewards. Check out the docs_ for more info!
 
-The library is built on top of the Ivy deep learning framework.
+The library is built on top of the Ivy machine learning framework.
 This means all environments simultaneously support:
 Jax, Tensorflow, PyTorch, MXNet, and Numpy.
 
@@ -354,7 +354,7 @@ The optimization iteration is shown in the bottom right, along with the step in 
 Get Involed
 -----------
 
-We hope the differentiable environments in this library are useful to a wide range of deep learning developers.
+We hope the differentiable environments in this library are useful to a wide range of machine learning developers.
 However, there are many more tasks which could be implemented.
 
 If there are any particular tasks you feel are missing,
@@ -369,7 +369,7 @@ Citation
 ::
 
     @article{lenton2021ivy,
-      title={Ivy: Templated Deep Learning for Inter-Framework Portability},
+      title={Ivy: Unified Machine Learning for Inter-Framework Portability},
       author={Lenton, Daniel and Pardo, Fabio and Falck, Fabian and James, Stephen and Clark, Ronald},
       journal={arXiv preprint arXiv:2102.02886},
       year={2021}
