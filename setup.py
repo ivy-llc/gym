@@ -99,7 +99,7 @@ long_description = '\n'.join(lines)
 
 setup(
     name='ivy-gym',
-    version='1.1.8',
+    version='1.1.9',
     author='Ivy Team',
     author_email='ivydl.team@gmail.com',
     description='Fully differentiable reinforcement learning environments, written in Ivy.',
