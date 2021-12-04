@@ -7,9 +7,9 @@ jobs:
       - name: Checkout 🛎️Ivy Gym
         uses: actions/checkout@v2
         with:
-          path: ivy_gym
+          path: gym
           persist-credentials: false
 
       - name: Run Tests
         run: |
-          docker run --rm -v `pwd`/ivy_gym:/ivy_gym ivydl/ivy-gym:latest python3 -m pytest ivy_gym_tests/
+          docker run --rm -v `pwd`/gym:/gym ivydl/ivy-gym:latest python3 -m pytest ivy_gym_tests/
