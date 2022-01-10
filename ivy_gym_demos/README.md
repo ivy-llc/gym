@@ -8,7 +8,7 @@ Running these demos is quick and simple.
 First, clone this repo:
 
 ```bash
-git clone https://github.com/ivy-dl/gym.git ~/ivy_gym
+git clone https://github.com/unifyai/gym.git ~/ivy_gym
 ```
 
 ### Local
@@ -54,7 +54,7 @@ cd ~/ivy_gym/ivy_gym_demos
 ./run_demo.sh run_through
 ```
 
-This script, and the different gym environments, are further discussed in the [Run Through](https://github.com/ivy-dl/gym#run-through) section of the main README.
+This script, and the different gym environments, are further discussed in the [Run Through](https://github.com/unifyai/gym#run-through) section of the main README.
 We advise following along with this section for maximum effect. The demo script should also be opened locally,
 and breakpoints added to step in at intermediate points to further explore.
 
@@ -77,7 +77,7 @@ cd ~/ivy_gym/ivy_gym_demos
 Example output is given below:
 
 <p align="center">
-    <img width="75%" style="display: block;" src='https://github.com/ivy-dl/ivy-dl.github.io/blob/master/img/externally_linked/ivy_gym/demo_a.gif?raw=true'>
+    <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/master/img/externally_linked/ivy_gym/demo_a.gif?raw=true'>
 </p>
 
 ### Policy Optimization
@@ -92,10 +92,10 @@ cd ~/ivy_gym/ivy_gym_demos
 Example output is given below:
 
 <p align="center">
-    <img width="75%" style="display: block;" src='https://github.com/ivy-dl/ivy-dl.github.io/blob/master/img/externally_linked/ivy_gym/demo_b.gif?raw=true'>
+    <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/master/img/externally_linked/ivy_gym/demo_b.gif?raw=true'>
 </p>
 
 ## Get Involved
 
 If you have any issues running any of the demos, would like to request further demos, or would like to implement your own, then get it touch.
-Feature requests, pull requests, and [tweets](https://twitter.com/ivythread) all welcome!
+Feature requests, pull requests, and [tweets](https://twitter.com/unify_ai) all welcome!
