@@ -29,7 +29,7 @@ For a docker installation, first ensure [docker](https://docs.docker.com/get-doc
 Then simply pull the ivy gym image:
 
 ```bash
-docker pull ivydl/ivy-gym:latest
+docker pull unifyai/ivy-gym:latest
 ```
 
 ## Demos
