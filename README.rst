@@ -1,4 +1,4 @@
-.. image:: https://github.com/unifyai/gym/blob/master/docs/partial_source/logos/logo.png?raw=true
+.. image:: https://github.com/unifyai/unifyai.github.io/blob/master/img/externally_linked/repos/gym/logo.png?raw=true
    :width: 100%
 
 .. raw:: html
