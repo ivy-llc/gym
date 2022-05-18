@@ -93,10 +93,6 @@ class MountainCar(gym.Env):
         ----------
         action
 
-
-        Returns
-        -------
-
         """
         x_acc = action * self.torque_scale - self.g * ivy.cos(3 * self.x)
         self.x_vel = self.x_vel + self.dt * x_acc
@@ -110,10 +106,6 @@ class MountainCar(gym.Env):
         Parameters
         ----------
         xs
-
-
-        Returns
-        -------
 
         """
         return ivy.sin(3 * xs) * 0.45 + 0.55
