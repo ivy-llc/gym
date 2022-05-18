@@ -108,10 +108,6 @@ class Reacher(gym.Env):
         ----------
         action
 
-
-        Returns
-        -------
-
         """
         angle_accs = self.torque_scale * action
         self.angle_vels = self.angle_vels + self.dt * angle_accs
