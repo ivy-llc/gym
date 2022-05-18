@@ -8,16 +8,20 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class Reacher(gym.Env):
+    """ """
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 30
     }
 
     def __init__(self, num_joints=2):  # noqa
-        """
-        Initialize Reacher environment
-        :param num_joints: Number of joints in reacher.
-        :type num_joints: int, optional
+        """Initialize Reacher environment
+
+        Parameters
+        ----------
+        num_joints
+                   Number of joints in reacher.
+
         """
         self.num_joints = num_joints
         self.torque_scale = 1.
@@ -31,10 +35,13 @@ class Reacher(gym.Env):
         self._logged_headless_message = False
 
     def get_observation(self):
-        """
-        Get observation from environment.
+        """Get observation from environment.
 
-        :return: observation array
+        Returns
+        -------
+        ret
+            observation array
+
         """
         ob = (ivy.reshape(ivy.cos(self.angles), (1, 2)), ivy.reshape(ivy.sin(self.angles), (1, 2)),
               ivy.reshape(self.angle_vels, (1, 2)), ivy.reshape(self.goal_xy, (1, 2)))
@@ -42,10 +49,13 @@ class Reacher(gym.Env):
         return ivy.reshape(ob, (-1,))
 
     def get_reward(self):
-        """
-        Get reward based on current state
+        """Get reward based on current state
 
-        :return: Reward array
+        Returns
+        -------
+        ret
+            Reward array
+
         """
         # Goal proximity.
         x = ivy.reduce_sum(ivy.cos(self.angles), -1)
@@ -55,25 +65,35 @@ class Reacher(gym.Env):
         return ivy.reduce_mean(rew, axis=0, keepdims=True)
 
     def get_state(self):
-        """
-        Get current state in environment.
+        """Get current state in environment.
 
-        :return: angles, angular velocities, and goal xy arrays
+        Returns
+        -------
+        ret
+            angles, angular velocities, and goal xy arrays
+
         """
         return self.angles, self.angle_vels, self.goal_xy
 
     def set_state(self, state):
-        """
-        Set current state in environment.
+        """Set current state in environment.
 
-        :param state: tuple of angles, angular_velocities, and goal xy arrays
-        :type state: tuple of arrays
-        :return: observation array
+        Parameters
+        ----------
+        state
+            tuple of angles, angular_velocities, and goal xy arrays
+
+        Returns
+        -------
+        ret
+            observation array
+
         """
         self.angles, self.angle_vels, self.goal_xy = state
         return self.get_observation()
 
     def reset(self):
+        """ """
         self.angles = ivy.random_uniform(-np.pi, np.pi, [self.num_joints])
         self.angle_vels = ivy.random_uniform(
             -1, 1, [self.num_joints])
@@ -82,14 +102,20 @@ class Reacher(gym.Env):
         return self.get_observation()
 
     def step(self, action):
+        """
+
+        Parameters
+        ----------
+        action
+
+        """
         angle_accs = self.torque_scale * action
         self.angle_vels = self.angle_vels + self.dt * angle_accs
         self.angles = self.angles + self.dt * self.angle_vels
         return self.get_observation(), self.get_reward(), False, {}
 
     def render(self, mode='human'):
-        """
-        Renders the environment.
+        """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
         if mode is:
@@ -103,9 +129,16 @@ class Reacher(gym.Env):
           terminal-style text representation. The text can include newlines
           and ANSI escape sequences (e.g. for colors).
 
-        :param mode: Render mode, one of [human|rgb_array], default human
-        :type mode: str, optional
-        :return: Rendered image.
+        Parameters
+        ----------
+        mode
+            Render mode, one of [human|rgb_array], default human
+
+        Returns
+        -------
+        ret
+            Rendered image.
+
         """
         if self.viewer is None:
             # noinspection PyBroadException
@@ -113,7 +146,8 @@ class Reacher(gym.Env):
                 from gym.envs.classic_control import rendering
             except:
                 if not self._logged_headless_message:
-                    print('Unable to connect to display. Running the Ivy environment in headless mode...')
+                    print('Unable to connect to display. Running the Ivy environment '
+                          'in headless mode...')
                     self._logged_headless_message = True
                 return
             self.viewer = rendering.Viewer(500, 500)
@@ -167,9 +201,7 @@ class Reacher(gym.Env):
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
     def close(self):
-        """
-        Close environment.
-        """
+        """Close environment."""
         if self.viewer:
             self.viewer.close()
             self.viewer = None

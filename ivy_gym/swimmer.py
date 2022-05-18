@@ -1,6 +1,5 @@
 """Path finding task.
-A fish needs to reach a goal location while avoiding urchins.
-"""
+A fish needs to reach a goal location while avoiding urchins."""
 
 import ivy
 import gym
@@ -12,6 +11,7 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class Swimmer(gym.Env):
+    """ """
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 30
@@ -21,8 +21,11 @@ class Swimmer(gym.Env):
         """
         Initialize Swimmer environment.
 
-        :param num_urchins: Number of urchins.
-        :type num_urchins: int, optional
+        Parameters
+        ----------
+        num_urchins
+                    Number of urchins.
+
         """
         self.num_urchins = num_urchins
         self.dt = 0.05
@@ -35,10 +38,13 @@ class Swimmer(gym.Env):
         self._logged_headless_message = False
 
     def get_observation(self):
-        """
-        Get observation from environment.
+        """Get observation from environment.
 
-        :return: observation array
+        Returns
+        -------
+        ret
+            observation array
+
         """
         ob = (ivy.reshape(self.urchin_xys, (-1, 2)), ivy.reshape(self.xy, (-1, 2)),
               ivy.reshape(self.xy_vel, (-1, 2)), ivy.reshape(self.goal_xy, (-1, 2)))
@@ -46,10 +52,13 @@ class Swimmer(gym.Env):
         return ivy.reshape(ob, (-1,))
 
     def get_reward(self):
-        """
-        Get reward based on current state
+        """Get reward based on current state
 
-        :return: Reward array
+        Returns
+        -------
+        ret
+            Reward array
+
         """
         # Goal proximity.
         rew = ivy.exp(
@@ -61,25 +70,35 @@ class Swimmer(gym.Env):
         return ivy.reshape(rew, (1,))
 
     def get_state(self):
-        """
-        Get current state in environment.
+        """Get current state in environment.
 
-        :return: Urchin xys, xy, xy velocity, and goal xy arrays
+        Returns
+        -------
+        ret
+            Urchin xys, xy, xy velocity, and goal xy arrays
+
         """
         return self.urchin_xys, self.xy, self.xy_vel, self.goal_xy
 
     def set_state(self, state):
-        """
-        Set current state in environment.
+        """Set current state in environment.
 
-        :param state: tuple of urchin xys, xy, xy velocity, and goal xy
-        :type state: tuple of arrays
-        :return: observation array
+        Parameters
+        ----------
+        state
+            tuple of urchin xys, xy, xy velocity, and goal xy
+
+        Returns
+        -------
+        ret
+            observation array
+
         """
         self.urchin_xys, self.xy, self.xy_vel, self.goal_xy = state
         return self.get_observation()
 
     def reset(self):
+        """ """
         self.urchin_xys = ivy.random_uniform(
             -1, 1, (self.num_urchins, 2))
         self.xy = ivy.random_uniform(-1, 1, (2,))
@@ -88,13 +107,19 @@ class Swimmer(gym.Env):
         return self.get_observation()
 
     def step(self, action):
+        """
+
+        Parameters
+        ----------
+        action
+
+        """
         self.xy_vel = self.xy_vel + self.dt * action
         self.xy = self.xy + self.dt * self.xy_vel
         return self.get_observation(), self.get_reward(), False, {}
 
     def render(self, mode='human'):
-        """
-        Renders the environment.
+        """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
         if mode is:
@@ -108,9 +133,16 @@ class Swimmer(gym.Env):
           terminal-style text representation. The text can include newlines
           and ANSI escape sequences (e.g. for colors).
 
-        :param mode: Render mode, one of [human|rgb_array], default human
-        :type mode: str, optional
-        :return: Rendered image.
+        Parameters
+        ----------
+        mode
+            Render mode, one of [human|rgb_array], default human
+
+        Returns
+        -------
+        ret
+            Rendered image.
+
         """
         if self.viewer is None:
             # noinspection PyBroadException
@@ -118,12 +150,14 @@ class Swimmer(gym.Env):
                 from gym.envs.classic_control import rendering
             except:
                 if not self._logged_headless_message:
-                    print('Unable to connect to display. Running the Ivy environment in headless mode...')
+                    print('Unable to connect to display. Running the Ivy environment '
+                          'in headless mode...')
                     self._logged_headless_message = True
                 return
             from pyglet import gl
 
             class _StarGeom(rendering.Geom):
+                """ """
                 def __init__(self, r1, r2, n):
                     super().__init__()
                     self.r1 = r1
@@ -131,6 +165,7 @@ class Swimmer(gym.Env):
                     self.n = n
 
                 def render1(self):
+                    """ """
                     n = self.n * 2
                     for i in range(0, n, 2):
                         gl.glBegin(gl.GL_TRIANGLES)
@@ -148,11 +183,13 @@ class Swimmer(gym.Env):
                     gl.glEnd()
 
             class _FishGeom(rendering.Geom):
+                """ """
                 def __init__(self):
                     super().__init__()
                     self.color = 0., 0., 0.
 
                 def render1(self):
+                    """ """
                     points = [
                         [0.08910714285714288, -0.009017857142857133],
                         [0.13910714285714287, -0.04026785714285712],
@@ -195,6 +232,17 @@ class Swimmer(gym.Env):
                     gl.glEnd()
 
                 def set_color(self, r, g, b):
+                    """
+
+                    Parameters
+                    ----------
+                    r
+
+                    g
+
+                    b
+
+                    """
                     self.color = r, g, b
 
             self.viewer = rendering.Viewer(500, 500)
@@ -233,9 +281,7 @@ class Swimmer(gym.Env):
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
     def close(self):
-        """
-        Close environment.
-        """
+        """Close environment."""
         if self.viewer:
             self.viewer.close()
             self.viewer = None
