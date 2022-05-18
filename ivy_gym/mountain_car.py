@@ -1,7 +1,5 @@
 """Mountain-car task adapted from:
-https://github.com/openai/gym/blob/master/gym/envs/classic_control/
-mountain_car.py
-"""
+https://github.com/openai/gym/blob/master/gym/envs/classic_control/mountain_car.py"""
 
 # global
 import ivy
@@ -11,6 +9,7 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class MountainCar(gym.Env):
+    """ """
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 30
@@ -31,47 +30,74 @@ class MountainCar(gym.Env):
         self._logged_headless_message = False
 
     def get_observation(self):
-        """
-        Get observation from environment.
+        """Get observation from environment.
 
-        :return: observation array
+        Returns
+        -------
+        ret
+            observation array
+
         """
         return ivy.concatenate([self.x, self.x_vel], axis=-1)
 
     def get_reward(self):
-        """
-        Get reward based on current state
+        """Get reward based on current state
 
-        :return: Reward array
+        Returns
+        -------
+        ret
+            Reward array
+
         """
         # Goal proximity.
         return ivy.reshape(ivy.exp(-5 * ((self.x - self.goal_x) ** 2)), (1,))
 
     def get_state(self):
-        """
-        Get current state in environment.
+        """Get current state in environment.
 
-        :return: x and x velocity arrays
+        Returns
+        -------
+        ret
+            x and x velocity arrays
+
         """
         return self.x, self.x_vel
 
     def set_state(self, state):
-        """
-        Set current state in environment.
+        """Set current state in environment.
 
-        :param state: tuple of x and x_velocity
-        :type state: tuple of arrays
-        :return: observation array
+        Parameters
+        ----------
+        state
+            tuple of x and x_velocity
+
+        Returns
+        -------
+        ret
+            observation array
+
         """
         self.x, self.x_vel = state
         return self.get_observation()
 
     def reset(self):
+        """ """
         self.x = ivy.random_uniform(-0.9, -0.2, [1])
         self.x_vel = ivy.zeros([1])
         return self.get_observation()
 
     def step(self, action):
+        """
+
+        Parameters
+        ----------
+        action
+
+
+        Returns
+        -------
+
+        """
         x_acc = action * self.torque_scale - self.g * ivy.cos(3 * self.x)
         self.x_vel = self.x_vel + self.dt * x_acc
         self.x = self.x + self.dt * self.x_vel
@@ -79,11 +105,21 @@ class MountainCar(gym.Env):
 
     @staticmethod
     def _height(xs):
+        """
+
+        Parameters
+        ----------
+        xs
+
+
+        Returns
+        -------
+
+        """
         return ivy.sin(3 * xs) * 0.45 + 0.55
 
     def render(self, mode='human'):
-        """
-        Renders the environment.
+        """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
         if mode is:
@@ -97,9 +133,16 @@ class MountainCar(gym.Env):
           terminal-style text representation. The text can include newlines
           and ANSI escape sequences (e.g. for colors).
 
-        :param mode: Render mode, one of [human|rgb_array], default human
-        :type mode: str, optional
-        :return: Rendered image.
+        Parameters
+        ----------
+        mode
+            Render mode, one of [human|rgb_array], default human
+
+        Returns
+        -------
+        ret
+            Rendered image.
+
         """
         screen_width = 500
         screen_height = 500
@@ -116,7 +159,8 @@ class MountainCar(gym.Env):
                 from gym.envs.classic_control import rendering
             except:
                 if not self._logged_headless_message:
-                    print('Unable to connect to display. Running the Ivy environment in headless mode...')
+                    print('Unable to connect to display. Running the Ivy environment '
+                          'in headless mode...')
                     self._logged_headless_message = True
                 return
 
@@ -177,9 +221,7 @@ class MountainCar(gym.Env):
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
     def close(self):
-        """
-        Close environment.
-        """
+        """Close environment."""
         if self.viewer:
             self.viewer.close()
             self.viewer = None

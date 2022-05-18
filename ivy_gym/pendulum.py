@@ -1,6 +1,5 @@
 """Pendulum task adapted from:
-https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py
-"""
+https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py"""
 
 # global
 import ivy
@@ -10,6 +9,7 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class Pendulum(gym.Env):
+    """ """
     metadata = {
         'render.modes': ['human', 'rgb_array'],
         'video.frames_per_second': 30
@@ -33,10 +33,13 @@ class Pendulum(gym.Env):
         self._logged_headless_message = False
 
     def get_observation(self):
-        """
-        Get observation from environment.
+        """Get observation from environment.
 
-        :return: observation array
+        Returns
+        -------
+        ret
+            observation array
+
         """
         return ivy.concatenate(
             (ivy.cos(self.angle), ivy.sin(self.angle),
@@ -44,40 +47,60 @@ class Pendulum(gym.Env):
             axis=-1)
 
     def get_reward(self):
-        """
-        Get reward based on current state
+        """Get reward based on current state
 
-        :return: Reward array
+        Returns
+        -------
+        ret
+            Reward array
+
         """
         # Pole verticality.
         rew = (ivy.cos(self.angle) + 1) / 2
         return ivy.reshape(rew, (1,))
 
     def get_state(self):
-        """
-        Get current state in environment.
+        """Get current state in environment.
 
-        :return: angle and angular velocity arrays
+        Returns
+        -------
+        ret
+            angle and angular velocity arrays
+
         """
         return self.angle, self.angle_vel
 
     def set_state(self, state):
-        """
-        Set current state in environment.
+        """Set current state in environment.
 
-        :param state: tuple of angle and angular_velocity
-        :type state: tuple of arrays
-        :return: observation array
+        Parameters
+        ----------
+        state
+            tuple of angle and angular_velocity
+
+        Returns
+        -------
+        ret
+            observation array
+
         """
         self.angle, self.angle_vel = state
         return self.get_observation()
 
     def reset(self):
+        """ """
         self.angle = ivy.random_uniform(-np.pi, np.pi, [1])
         self.angle_vel = ivy.random_uniform(-1., 1., [1])
         return self.get_observation()
 
     def step(self, action):
+        """
+
+        Parameters
+        ----------
+        action
+
+        """
         action = action * self.torque_scale
 
         angle_acc = (
@@ -90,8 +113,7 @@ class Pendulum(gym.Env):
         return self.get_observation(), self.get_reward(), False, {}
 
     def render(self, mode='human'):
-        """
-        Renders the environment.
+        """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
         if mode is:
@@ -105,9 +127,16 @@ class Pendulum(gym.Env):
           terminal-style text representation. The text can include newlines
           and ANSI escape sequences (e.g. for colors).
 
-        :param mode: Render mode, one of [human|rgb_array], default human
-        :type mode: str, optional
-        :return: Rendered image.
+        Parameters
+        ----------
+        mode
+            Render mode, one of [human|rgb_array], default human
+
+        Returns
+        -------
+        ret
+            Rendered image.
+
         """
         if self.viewer is None:
             # noinspection PyBroadException
@@ -115,7 +144,8 @@ class Pendulum(gym.Env):
                 from gym.envs.classic_control import rendering
             except:
                 if not self._logged_headless_message:
-                    print('Unable to connect to display. Running the Ivy environment in headless mode...')
+                    print('Unable to connect to display. Running the Ivy environment '
+                          'in headless mode...')
                     self._logged_headless_message = True
                 return
 
@@ -141,9 +171,7 @@ class Pendulum(gym.Env):
         return self.viewer.render(return_rgb_array=mode == 'rgb_array')
 
     def close(self):
-        """
-        Close environment.
-        """
+        """Close environment."""
         if self.viewer:
             self.viewer.close()
             self.viewer = None
