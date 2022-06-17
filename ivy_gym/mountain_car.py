@@ -38,7 +38,7 @@ class MountainCar(gym.Env):
             observation array
 
         """
-        return ivy.concatenate([self.x, self.x_vel], axis=-1)
+        return ivy.concat([self.x, self.x_vel], axis=-1)
 
     def get_reward(self):
         """Get reward based on current state

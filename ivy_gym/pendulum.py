@@ -41,7 +41,7 @@ class Pendulum(gym.Env):
             observation array
 
         """
-        return ivy.concatenate(
+        return ivy.concat(
             (ivy.cos(self.angle), ivy.sin(self.angle),
              self.angle_vel),
             axis=-1)
