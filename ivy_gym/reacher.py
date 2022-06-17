@@ -45,7 +45,7 @@ class Reacher(gym.Env):
         """
         ob = (ivy.reshape(ivy.cos(self.angles), (1, 2)), ivy.reshape(ivy.sin(self.angles), (1, 2)),
               ivy.reshape(self.angle_vels, (1, 2)), ivy.reshape(self.goal_xy, (1, 2)))
-        ob = ivy.concatenate(ob, axis=0)
+        ob = ivy.concat(ob, axis=0)
         return ivy.reshape(ob, (-1,))
 
     def get_reward(self):
@@ -58,11 +58,11 @@ class Reacher(gym.Env):
 
         """
         # Goal proximity.
-        x = ivy.reduce_sum(ivy.cos(self.angles), -1)
-        y = ivy.reduce_sum(ivy.sin(self.angles), -1)
-        xy = ivy.concatenate([ivy.expand_dims(x, 0), ivy.expand_dims(y, 0)], axis=0)
-        rew = ivy.reshape(ivy.exp(-1 * ivy.reduce_sum((xy - self.goal_xy) ** 2, -1)), (-1,))
-        return ivy.reduce_mean(rew, axis=0, keepdims=True)
+        x = ivy.sum(ivy.cos(self.angles), -1)
+        y = ivy.sum(ivy.sin(self.angles), -1)
+        xy = ivy.concat([ivy.expand_dims(x, 0), ivy.expand_dims(y, 0)], axis=0)
+        rew = ivy.reshape(ivy.exp(-1 * ivy.sum((xy - self.goal_xy) ** 2, -1)), (-1,))
+        return ivy.mean(rew, axis=0, keepdims=True)
 
     def get_state(self):
         """Get current state in environment.
