@@ -4,7 +4,8 @@ from typing import Dict
 
 # local
 import ivy
-import ivy_tests.test_ivy
+import ivy_tests
+import ivy_tests.test_ivy.helpers as helpers
 
 
 FW_STRS = ['numpy', 'jax', 'tensorflow', 'torch', 'mxnet']
