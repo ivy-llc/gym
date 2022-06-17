@@ -12,4 +12,4 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker run --rm -v `pwd`/gym:/gym unifyai/ivy-gym:latest python3 -m pytest ivy_gym_tests/
+          docker run --rm -v `pwd`/gym:/gym unifyai/gym:latest python3 -m pytest ivy_gym_tests/
