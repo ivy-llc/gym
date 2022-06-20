@@ -4,13 +4,13 @@ from typing import Dict
 
 # local
 import ivy
-from ivy_tests import helpers
+import ivy_tests as ivy_t
 
 
 FW_STRS = ['numpy', 'jax', 'tensorflow', 'torch', 'mxnet']
 
 
-TEST_FRAMEWORKS: Dict[str, callable] = {'numpy': lambda: helpers.get_ivy_numpy(),
+TEST_FRAMEWORKS: Dict[str, callable] = {'numpy': lambda: ivy_t.test_ivy.helpers.get_ivy_numpy(),
                                         'jax': lambda: helpers.get_ivy_jax(),
                                         'tensorflow': lambda: helpers.get_ivy_tensorflow(),
                                         'torch': lambda: helpers.get_ivy_torch(),
