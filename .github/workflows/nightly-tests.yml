@@ -12,4 +12,5 @@ jobs:
 
       - name: Run Tests
         run: |
-          docker run --rm -v `pwd`/gym:/gym unifyai/gym:latest python3 -m pytest --import-mode=importlib ivy_gym_tests/
+          cd gym
+          docker run --rm -v `pwd`:/gym unifyai/gym:latest python3 -m pytest gym/ivy_gym_tests/
