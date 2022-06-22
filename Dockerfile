@@ -2,7 +2,7 @@ FROM unifyai/ivy:latest-copsim
 
 # Install Ivy
 RUN rm -rf ivy && \
-    git clone https://github.com/unifyai/ivy && \
+    git clone --recurse-submodules https://github.com/unifyai/ivy && \
     cd ivy && \
     cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
     cat optional.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
@@ -26,8 +26,8 @@ RUN cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/
 COPY ivy_gym_demos/requirements.txt /demo_requirements.txt
 RUN cat demo_requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin
 
-RUN python3 test_dependencies.py -fp requirements.txt,demo_requirements.txt && \
-    rm -rf requirements.txt && \
-    rm -rf demo_requirements.txt
+# RUN python3 test_dependencies.py -fp requirements.txt,demo_requirements.txt && \
+#    rm -rf requirements.txt && \
+#    rm -rf demo_requirements.txt
 
 WORKDIR /gym
