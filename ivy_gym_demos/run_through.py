@@ -11,8 +11,17 @@ def main(env_str=None, visualize=True, f=None):
     # ----------------#
 
     # choose random framework
-    f = choose_random_framework() if f is None else f
-    ivy.set_framework(f)
+    if f is None:
+        f = ivy.choose_random_backend()
+    else:
+        if f is ivy.functional.backends.numpy:
+            f = "numpy"
+        elif f is ivy.functional.backends.jax:
+            f = "jax"
+        elif f is ivy.functional.backends.torch:
+            f = "torch"
+    # f = ivy.choose_random_framework() if f is None else f
+    ivy.set_backend(f)
 
     # get environment
     env = getattr(ivy_gym, env_str)()
@@ -26,7 +35,7 @@ def main(env_str=None, visualize=True, f=None):
         if visualize:
             env.render()
     env.close()
-    ivy.unset_framework()
+    ivy.unset_backend()
 
     # message
     print('End of Run Through Demo!')

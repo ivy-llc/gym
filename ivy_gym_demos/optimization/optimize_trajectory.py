@@ -27,8 +27,18 @@ def train_step(compiled_loss_fn, optimizer, initial_state, logits):
 def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None):
 
     # config
-    f = choose_random_framework(excluded=['numpy']) if f is None else f
-    ivy.set_framework(f)
+    if f is None:
+        f = ivy.choose_random_backend(excluded=['numpy'])
+    else:
+        if f is ivy.functional.backends.numpy:
+            f = "numpy"
+        elif f is ivy.functional.backends.jax:
+            f = "jax"
+        elif f is ivy.functional.backends.torch:
+            f = "torch"
+
+    # f = choose_random_framework(excluded=['numpy']) if f is None else f
+    ivy.set_backend(f)
     ivy.seed(seed)
     env = getattr(ivy_gym, env_str)()
     env.reset()
@@ -69,7 +79,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
         if len(scores) == log_freq:
             print('\nIterations: {} Mean Score: {}\n'.format(iteration + 1, np.mean(scores)))
             scores.clear()
-    ivy.unset_framework()
+    ivy.unset_backend()
 
 
 if __name__ == '__main__':
