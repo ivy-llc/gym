@@ -18,7 +18,7 @@ function main() {
   -v /home/"${USER}"/ivy_demo_utils/ivy_demo_utils:/demo-utils/ivy_demo_utils \
   -v /home/"${USER}"/ivy_builder/ivy_builder:/builder/ivy_builder \
   \
-   unifyai/ivy-gym:latest python3 -m $demos"$1" "${@:2}"
+   unifyai/gym:latest python3 -m $demos"$1" "${@:2}"
 }
 
 main "$@" || cleanup

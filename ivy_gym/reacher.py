@@ -58,10 +58,10 @@ class Reacher(gym.Env):
 
         """
         # Goal proximity.
-        x = ivy.sum(ivy.cos(self.angles), -1)
-        y = ivy.sum(ivy.sin(self.angles), -1)
+        x = ivy.sum(ivy.cos(self.angles), axis=-1)
+        y = ivy.sum(ivy.sin(self.angles), axis=-1)
         xy = ivy.concat([ivy.expand_dims(x, 0), ivy.expand_dims(y, 0)], axis=0)
-        rew = ivy.reshape(ivy.exp(-1 * ivy.sum((xy - self.goal_xy) ** 2, -1)), (-1,))
+        rew = ivy.reshape(ivy.exp(-1 * ivy.sum((xy - self.goal_xy) ** 2, axis=-1)), (-1,))
         return ivy.mean(rew, axis=0, keepdims=True)
 
     def get_state(self):

@@ -62,11 +62,11 @@ class Swimmer(gym.Env):
         """
         # Goal proximity.
         rew = ivy.exp(
-            -0.5 * ivy.sum((self.xy - self.goal_xy) ** 2, -1))
+            -0.5 * ivy.sum((self.xy - self.goal_xy) ** 2, axis=-1))
         # Urchins proximity.
         rew = rew * ivy.prod(
             1 - ivy.exp(-30 * ivy.sum(
-                (self.xy - self.urchin_xys) ** 2, -1)), -1)
+                (self.xy - self.urchin_xys) ** 2, axis=-1)), axis=-1)
         return ivy.reshape(rew, (1,))
 
     def get_state(self):
