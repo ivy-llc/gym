@@ -3,11 +3,11 @@ Collection of tests for differentiable gym environments written with Ivy.
 """
 
 # global
-import ivy.jax
-import ivy.mxnet
-import ivy.numpy
-import ivy.tensorflow
-import ivy.torch
+import ivy.functional.backends.jax
+import ivy.functional.backends.mxnet
+import ivy.functional.backends.numpy
+import ivy.functional.backends.tensorflow
+import ivy.functional.backends.torch
 
 # local
 from ivy_gym.cartpole import CartPole
