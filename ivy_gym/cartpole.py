@@ -42,7 +42,7 @@ class CartPole(gym.Env):
             observation array
 
         """
-        return ivy.concatenate(
+        return ivy.concat(
             [self.x, self.x_vel, ivy.cos(self.angle),
              ivy.sin(self.angle), self.angle_vel], axis=-1)
 
