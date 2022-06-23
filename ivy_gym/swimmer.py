@@ -64,7 +64,7 @@ class Swimmer(gym.Env):
         rew = ivy.exp(
             -0.5 * ivy.add((self.xy - self.goal_xy) ** 2, -1))
         # Urchins proximity.
-        rew = rew * ivy.prod(
+        rew = rew * ivy.multiply(
             1 - ivy.exp(-30 * ivy.add(
                 (self.xy - self.urchin_xys) ** 2, -1)), -1)
         return ivy.reshape(rew, (1,))
