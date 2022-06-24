@@ -100,7 +100,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_freq', type=int, default=100)
     parser.add_argument('--vis_freq', type=int, default=1000)
     parsed_args = parser.parse_args()
-    fw = parse_args.framework
+    fw = parsed_args.framework
     if fw is None:
         fw = ivy.choose_random_backend(excluded=['numpy'])
     if fw == 'numpy':
