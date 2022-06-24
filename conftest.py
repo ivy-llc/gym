@@ -23,20 +23,20 @@ TEST_CALL_METHODS: Dict[str, callable] = {'numpy': helpers.np_call,
 
 
 @pytest.fixture(autouse=True)
-def run_around_tests(dev_str, f, wrapped_mode, compile_graph, call):
+def run_around_tests(device, f, wrapped_mode, compile_graph, call, fw):
     if wrapped_mode and call is helpers.tf_graph_call:
         # ToDo: add support for wrapped_mode and tensorflow compilation
         pytest.skip()
     if wrapped_mode and call is helpers.jnp_call:
         # ToDo: add support for wrapped_mode with jax, presumably some errenously wrapped jax methods
         pytest.skip()
-    if 'gpu' in dev_str and call is helpers.np_call:
+    if 'gpu' in device and call is helpers.np_call:
         # Numpy does not support GPU
         pytest.skip()
     ivy.clear_backend_stack()
     with f.use:
         # f.set_wrapped_mode(wrapped_mode)
-        ivy.DefaultDevice(dev_str)
+        ivy.DefaultDevice(device)
         yield
 
 
