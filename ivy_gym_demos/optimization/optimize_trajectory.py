@@ -3,7 +3,6 @@ import ivy
 import ivy_gym
 import argparse
 import numpy as np
-from ivy.container import Container
 
 
 def loss_fn(env, initial_state, logits_in):
@@ -18,17 +17,17 @@ def loss_fn(env, initial_state, logits_in):
 
 def train_step(compiled_loss_fn, optimizer, initial_state, logits):
     loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
-                                             Container({'l': logits}))
-    logits = optimizer.step(Container({'l': logits}), grads)['l']
+                                             ivy.Container({'l': logits}))
+    logits = optimizer.step(ivy.Container({'l': logits}), grads)['l']
     return -ivy.reshape(loss, (1,)), logits
 
 
 def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None, fw=None):
 
     # config
-    fw = ivy.choose_random_backend(excluded=['tensorflow', 'mxnet']) if fw is None else fw
+    fw = ivy.choose_random_backend() if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.get_backend(fw)
+    f = ivy.get_backend(fw) if f is None else f
     ivy.seed(seed)
     env = getattr(ivy_gym, env_str)()
     env.reset()
@@ -87,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_freq', type=int, default=100)
     parser.add_argument('--vis_freq', type=int, default=1000)
     parsed_args = parser.parse_args()
-    fw = parse_args.framework
+    fw = parsed_args.framework
     if fw is None:
         fw = ivy.choose_random_backend(excluded=['numpy'])
     if fw == 'numpy':
