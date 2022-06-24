@@ -41,5 +41,5 @@ if __name__ == '__main__':
                         help='which framework to use. Chooses a random framework if unspecified.')
     parsed_args = parser.parse_args()
     fw = parsed_args.framework
-    f = None if framework is None else ivy.get_backend(fw)
+    f = None if fw is None else ivy.get_backend(fw)
     main(parsed_args.env, not parsed_args.no_visuals, f, fw)
