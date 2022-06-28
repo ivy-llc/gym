@@ -87,6 +87,6 @@ def pytest_generate_tests(metafunc):
 
 def pytest_addoption(parser):
     parser.addoption('--device', action="store", default="cpu")
-    parser.addoption('--backend', action="store", default="numpy,jax,tensorflow,torch,mxnet")
+    parser.addoption('--backend', action="store", default="numpy,jax,tensorflow,torch")
     parser.addoption('--wrapped_mode', action="store", default="false")
     parser.addoption('--compile_graph', action="store", default="true")
