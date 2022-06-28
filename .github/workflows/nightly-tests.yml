@@ -10,6 +10,11 @@ jobs:
           path: gym
           persist-credentials: false
 
+      - name: Build Docker Image
+        run: |
+          docker build -t my-gym .
+
       - name: Run Tests
         run: |
-          docker run --rm -v `pwd`/gym:/gym unifyai/gym:latest python3 -m pytest gym/ivy_gym_tests/
+          cd gym
+          docker run --rm -v `pwd`:/gym my-gym python3 -m pytest gym/ivy_gym_tests/
