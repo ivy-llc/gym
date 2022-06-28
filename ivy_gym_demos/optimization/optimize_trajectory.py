@@ -12,7 +12,7 @@ def loss_fn(env, initial_state, logits_in):
         ac = ivy.tanh(logs_)
         rew = env.step(ac)[1]
         score = score + rew
-    return ivy.to_native(-score[0], nested=True)
+    return -score[0]
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, logits):
@@ -38,8 +38,6 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     logits = ivy.variable(ivy.random_uniform(-2, 2, (steps, ac_dim)))
 
     # compile loss function
-    starting_state = ivy.to_native(starting_state, nested=True)
-    logits = ivy.to_native(logits, nested=True)
     compiled_loss_fn = ivy.compile(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
                                    False, example_inputs=[starting_state, logits])
 
