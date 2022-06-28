@@ -3,4 +3,3 @@ GLU # mod_name=pyglet
 pyglet # mod_name=pyglet
 ivy-core # mod_name=ivy
 ivy-gym # mod_name=ivy_gym
-ivy-demo-utils # mod_name=ivy_demo_utils
