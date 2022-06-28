@@ -37,9 +37,9 @@ if __name__ == '__main__':
                         help='whether to run the demo without rendering images.')
     parser.add_argument('--env', default='CartPole',
                         choices=['CartPole', 'Pendulum', 'MountainCar', 'Reacher', 'Swimmer'])
-    parser.add_argument('--framework', type=str, default=None,
-                        help='which framework to use. Chooses a random framework if unspecified.')
+    parser.add_argument('--backend', type=str, default=None,
+                        help='which backend to use. Chooses a random backend if unspecified.')
     parsed_args = parser.parse_args()
-    fw = parsed_args.framework
+    fw = parsed_args.backend
     f = None if fw is None else ivy.get_backend(fw)
     main(parsed_args.env, not parsed_args.no_visuals, f, fw)
