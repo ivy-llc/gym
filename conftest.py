@@ -52,7 +52,7 @@ def pytest_generate_tests(metafunc):
     # framework
     raw_value = metafunc.config.getoption('--backend')
     if raw_value == 'all':
-        backend_strs = TEST_FRAMEWORKS.keys()
+        backend_strs = TEST_BACKENDS.keys()
     else:
         backend_strs = raw_value.split(',')
 
