@@ -3,7 +3,6 @@ import ivy
 import ivy_gym
 import argparse
 import numpy as np
-from ivy_demo_utils.framework_utils import choose_random_framework, get_framework_from_str
 
 
 class Policy(ivy.Module):
@@ -34,24 +33,15 @@ def loss_fn(env, initial_state, policy, v, steps):
 def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
     loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
     policy.v = optimizer.step(policy.v, grads)
-    return -f.reshape(loss, (1,))
+    return -ivy.reshape(loss, (1,))
 
 
-def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None):
+def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None, fw=None):
 
     # config
-    if f is None:
-        f = ivy.choose_random_backend(excluded=['numpy'])
-    else:
-        if f is ivy.functional.backends.numpy:
-            f = "numpy"
-        elif f is ivy.functional.backends.jax:
-            f = "jax"
-        elif f is ivy.functional.backends.torch:
-            f = "torch"
-
-    # f = choose_random_framework(excluded=['numpy']) if f is None else f
-    ivy.set_backend(f)
+    fw = ivy.choose_random_backend() if fw is None else fw
+    ivy.set_backend(fw)
+    f = ivy.get_backend(fw)
     ivy.seed(seed)
     env = getattr(ivy_gym, env_str)()
     starting_obs = env.reset()
@@ -110,14 +100,14 @@ if __name__ == '__main__':
     parser.add_argument('--log_freq', type=int, default=100)
     parser.add_argument('--vis_freq', type=int, default=1000)
     parsed_args = parser.parse_args()
-    if parsed_args.framework is None:
-        framework = choose_random_framework(excluded=['numpy'])
-    else:
-        framework = get_framework_from_str(parsed_args.framework)
-    if parsed_args.framework == 'numpy':
+    fw = parsed_args.framework
+    if fw is None:
+        fw = ivy.choose_random_backend(excluded=['numpy'])
+    if fw == 'numpy':
         raise Exception('Invalid framework selection. Numpy does not support auto-differentiation.\n'
                         'This demo involves gradient-based optimization, and so auto-diff is required.\n'
                         'Please choose a different backend framework.')
+    f = ivy.get_backend(fw)
     print('\nTraining for {} iterations.\n'.format(parsed_args.iters))
     main(parsed_args.env, parsed_args.steps, parsed_args.iters, parsed_args.lr, parsed_args.seed,
-         parsed_args.log_freq, parsed_args.vis_freq, not parsed_args.no_visuals, framework)
+         parsed_args.log_freq, parsed_args.vis_freq, not parsed_args.no_visuals, f, fw)

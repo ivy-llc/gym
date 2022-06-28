@@ -27,21 +27,21 @@ def _test_env(env):
         env.step(ac)
 
 
-def test_cartpole(dev_str, call):
+def test_cartpole(device, call):
     _test_env(CartPole())
 
 
-def test_mountain_car(dev_str, call):
+def test_mountain_car(device, call):
     _test_env(MountainCar())
 
 
-def test_pendulum(dev_str, call):
+def test_pendulum(device, call):
     _test_env(Pendulum())
 
 
-def test_reacher(dev_str, call):
+def test_reacher(device, call):
     _test_env(Reacher())
 
 
-def test_swimmer(dev_str, call):
+def test_swimmer(device, call):
     _test_env(Swimmer())

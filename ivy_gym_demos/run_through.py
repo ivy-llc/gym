@@ -2,26 +2,16 @@
 import ivy
 import argparse
 import ivy_gym
-from ivy_demo_utils.framework_utils import get_framework_from_str, choose_random_framework
 
 
-def main(env_str=None, visualize=True, f=None):
+def main(env_str=None, visualize=True, f=None, fw=None):
 
     # Framework Setup #
     # ----------------#
 
-    # choose random framework
-    if f is None:
-        f = ivy.choose_random_backend()
-    else:
-        if f is ivy.functional.backends.numpy:
-            f = "numpy"
-        elif f is ivy.functional.backends.jax:
-            f = "jax"
-        elif f is ivy.functional.backends.torch:
-            f = "torch"
-    # f = ivy.choose_random_framework() if f is None else f
-    ivy.set_backend(f)
+    fw = ivy.choose_random_backend() if fw is None else fw
+    ivy.set_backend(fw)
+    f = ivy.get_backend(fw) if f is None else f
 
     # get environment
     env = getattr(ivy_gym, env_str)()
@@ -50,5 +40,6 @@ if __name__ == '__main__':
     parser.add_argument('--framework', type=str, default=None,
                         help='which framework to use. Chooses a random framework if unspecified.')
     parsed_args = parser.parse_args()
-    framework = None if parsed_args.framework is None else get_framework_from_str(parsed_args.framework)
-    main(parsed_args.env, not parsed_args.no_visuals, framework)
+    fw = parsed_args.framework
+    f = None if fw is None else ivy.get_backend(fw)
+    main(parsed_args.env, not parsed_args.no_visuals, f, fw)
