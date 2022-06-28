@@ -77,7 +77,7 @@ if __name__ == '__main__':
                         help='whether to run the demo without rendering images.')
     parser.add_argument('--env', default='CartPole',
                         choices=['CartPole', 'Pendulum', 'MountainCar', 'Reacher', 'Swimmer'])
-    parser.add_argument('--framework', type=str, default=None,
+    parser.add_argument('--backend', type=str, default=None,
                         help='which framework to use. Chooses a random framework if unspecified.')
     parser.add_argument('--steps', type=int, default=100)
     parser.add_argument('--iters', type=int, default=10000)
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_freq', type=int, default=100)
     parser.add_argument('--vis_freq', type=int, default=1000)
     parsed_args = parser.parse_args()
-    fw = parsed_args.framework
+    fw = parsed_args.backend
     if fw is None:
         fw = ivy.choose_random_backend(excluded=['numpy'])
     if fw == 'numpy':
