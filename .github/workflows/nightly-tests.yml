@@ -12,7 +12,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t my-gym .
+          docker build -t my-gym /gym
 
       - name: Run Tests
         run: |
