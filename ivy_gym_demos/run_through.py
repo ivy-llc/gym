@@ -9,7 +9,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
     # Framework Setup #
     # ----------------#
 
-    fw = ivy.choose_random_backend(excluded=['tensorflow', 'mxnet']) if fw is None else fw
+    fw = ivy.choose_random_backend() if fw is None else fw
     ivy.set_backend(fw)
     f = ivy.get_backend(fw) if f is None else f
 
