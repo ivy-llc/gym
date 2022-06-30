@@ -34,7 +34,7 @@ def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
     initial_state = ivy.to_native(initial_state, nested=True)
     loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
     policy.v = optimizer.step(policy.v, grads)
-    return -f.reshape(loss, (1,))
+    return -ivy.reshape(loss, (1,))
 
 
 def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None, fw=None):
