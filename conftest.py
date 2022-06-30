@@ -23,21 +23,14 @@ TEST_CALL_METHODS: Dict[str, callable] = {'numpy': helpers.np_call,
 
 
 @pytest.fixture(autouse=True)
-def run_around_tests(device, f, wrapped_mode, compile_graph, call, fw):
-    if wrapped_mode and call is helpers.tf_graph_call:
-        # ToDo: add support for wrapped_mode and tensorflow compilation
-        pytest.skip()
-    if wrapped_mode and call is helpers.jnp_call:
-        # ToDo: add support for wrapped_mode with jax, presumably some errenously wrapped jax methods
-        pytest.skip()
+def run_around_tests(device, f, compile_graph, implicit, call, fw):
     if 'gpu' in device and call is helpers.np_call:
         # Numpy does not support GPU
         pytest.skip()
     ivy.clear_backend_stack()
     with f.use:
-        # f.set_wrapped_mode(wrapped_mode)
-        ivy.DefaultDevice(device)
-        yield
+        with ivy.DefaultDevice(device):
+            yield
 
 
 def pytest_generate_tests(metafunc):
@@ -56,15 +49,6 @@ def pytest_generate_tests(metafunc):
     else:
         backend_strs = raw_value.split(',')
 
-    # wrapped_mode
-    raw_value = metafunc.config.getoption('--wrapped_mode')
-    if raw_value == 'both':
-        wrapped_modes = [True, False]
-    elif raw_value == 'true':
-        wrapped_modes = [True]
-    else:
-        wrapped_modes = [False]
-
     # compile_graph
     raw_value = metafunc.config.getoption('--compile_graph')
     if raw_value == 'both':
@@ -74,19 +58,26 @@ def pytest_generate_tests(metafunc):
     else:
         compile_modes = [False]
 
+    # with_implicit
+    raw_value = metafunc.config.getoption('--with_implicit')
+    if raw_value == "true":
+        implicit_modes = [True, False]
+    else:
+        implicit_modes = [False]
+
     # create test configs
     configs = list()
     for backend_str in backend_strs:
         for device in devices:
-            for wrapped_mode in wrapped_modes:
-                for compile_graph in compile_modes:
+            for compile_graph in compile_modes:
+                for implicit in implicit_modes:
                     configs.append(
-                        (device, TEST_BACKENDS[backend_str](), wrapped_mode, compile_graph, TEST_CALL_METHODS[backend_str], backend_str))
-    metafunc.parametrize('device,f,wrapped_mode,compile_graph,call,fw', configs)
+                        (device, TEST_BACKENDS[backend_str](), compile_graph, implicit, TEST_CALL_METHODS[backend_str], backend_str))
+    metafunc.parametrize('device,f,compile_graph,implicit,call,fw', configs)
 
 
 def pytest_addoption(parser):
     parser.addoption('--device', action="store", default="cpu")
     parser.addoption('--backend', action="store", default="numpy,jax,tensorflow,torch")
-    parser.addoption('--wrapped_mode', action="store", default="false")
     parser.addoption('--compile_graph', action="store", default="true")
+    parser.addoption('--with_implicit', action="store", default="false")
