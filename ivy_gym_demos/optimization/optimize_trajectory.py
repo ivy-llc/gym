@@ -8,11 +8,11 @@ import numpy as np
 def loss_fn(env, initial_state, logits_in):
     env.set_state(initial_state)
     score = ivy.array([0.])
-    for logs_ in ivy.unstack(logits_in, 0):
+    for logs_ in ivy.unstack(logits_in, axis=0):
         ac = ivy.tanh(logs_)
         rew = env.step(ac)[1]
         score = score + rew
-    return -score[0]
+    return ivy.to_native(-score[0])
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, logits):
@@ -36,11 +36,11 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
 
     # trajectory parameters
     ac_dim = env.action_space.shape[0]
-    logits = ivy.variable(ivy.random_uniform(-2, 2, (steps, ac_dim)))
+    logits = ivy.variable(ivy.random_uniform(-2, 2, shape=(steps, ac_dim)))
 
     # compile loss function
     compiled_loss_fn = ivy.compile(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
-                                   False, example_inputs=[starting_state, logits])
+                                   False, example_inputs=[ivy.to_native(starting_state, nested=True), ivy.to_native(logits)])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
