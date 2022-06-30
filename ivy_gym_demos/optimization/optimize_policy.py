@@ -27,11 +27,11 @@ def loss_fn(env, initial_state, policy, v, steps):
         ac = policy(obs, v=v)
         obs, rew, _, _ = env.step(ac)
         score = score + rew
-    return ivy.to_native(-score[0])
+    return -score[0]
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
-    initial_state = ivy.to_native(initial_state, nested=True)
+    # initial_state = ivy.to_native(initial_state, nested=True)
     loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
     policy.v = optimizer.step(policy.v, grads)
     return -ivy.reshape(loss, (1,))
