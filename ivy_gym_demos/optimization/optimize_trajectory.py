@@ -20,7 +20,7 @@ def train_step(compiled_loss_fn, optimizer, initial_state, logits):
     loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
                                              ivy.Container({'l': logits}))
     logits = optimizer.step(ivy.Container({'l': logits}), grads)['l']
-    return -ivy.reshape(loss, (1,)), (logits)
+    return -ivy.reshape(loss, (1,)), logits
 
 
 def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None, fw=None):
