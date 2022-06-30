@@ -12,10 +12,11 @@ def loss_fn(env, initial_state, logits_in):
         ac = ivy.tanh(logs_)
         rew = env.step(ac)[1]
         score = score + rew
-    return ivy.to_native(-score[0])
+    return -score[0]
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, logits):
+    initial_state = ivy.to_native(initial_state, nested=True)
     loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
                                              ivy.Container({'l': logits}))
     logits = optimizer.step(ivy.Container({'l': logits}), grads)['l']
