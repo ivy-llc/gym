@@ -11,7 +11,7 @@ class Policy(ivy.Module):
         self._linear0 = ivy.Linear(in_size, hidden_size)
         self._linear1 = ivy.Linear(hidden_size, hidden_size)
         self._linear2 = ivy.Linear(hidden_size, out_size)
-        ivy.Module.__init__(self, 'cpu')
+        ivy.Module.__init__(self, device='cpu')
 
     def _forward(self, x):
         x = ivy.expand_dims(x, 0)
