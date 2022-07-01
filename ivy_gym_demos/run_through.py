@@ -20,7 +20,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
     env.reset()
     ac_dim = env.action_space.shape[0]
     for _ in range(250):
-        ac = ivy.random_uniform(-1, 1, (ac_dim,))
+        ac = ivy.random_uniform(-1, 1, shape=(ac_dim,))
         env.step(ac)
         if visualize:
             env.render()
