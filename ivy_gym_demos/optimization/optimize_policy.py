@@ -14,7 +14,7 @@ class Policy(ivy.Module):
         ivy.Module.__init__(self, device='cpu')
 
     def _forward(self, x):
-        x = ivy.expand_dims(x, 0)
+        x = ivy.expand_dims(x, axis=0)
         x = ivy.tanh(self._linear0(x, v=self.v.linear0))
         x = ivy.tanh(self._linear1(x, v=self.v.linear1))
         return ivy.tanh(self._linear2(x, v=self.v.linear2))[0]
