@@ -40,7 +40,7 @@ def train_step(compiled_loss_fn, optimizer, initial_state, policy):
 def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None, fw=None):
 
     # config
-    fw = ivy.choose_random_backend() if fw is None else fw
+    fw = ivy.choose_random_backend(excluded=['numpy']) if fw is None else fw
     ivy.set_backend(fw)
     f = ivy.get_backend(fw)
     ivy.seed(seed)
