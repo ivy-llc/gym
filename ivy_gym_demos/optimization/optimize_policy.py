@@ -30,7 +30,7 @@ def loss_fn(env, initial_state, policy, v, steps):
     return ivy.to_native(-score[0])
 
 
-def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
+def train_step(compiled_loss_fn, optimizer, initial_state, policy):
     initial_state = ivy.to_native(initial_state, nested=True)
     loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
     policy.v = optimizer.step(policy.v, grads)
@@ -75,7 +75,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
         env.reset()
         if iteration == 0:
             print('\nCompiling loss function for {} environment steps... This may take a while...\n'.format(steps))
-        score = train_step(compiled_loss_fn, optimizer, env.get_state(), policy, f)
+        score = train_step(compiled_loss_fn, optimizer, env.get_state(), policy)
         if iteration == 0:
             print('\nLoss function compiled!\n')
         print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))

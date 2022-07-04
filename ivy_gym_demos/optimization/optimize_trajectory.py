@@ -64,7 +64,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
         if iteration == 0:
             print('\nLoss function compiled!\n')
         print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
-        scores.append(f.to_numpy(score)[0])
+        scores.append(ivy.to_numpy(score)[0])
 
         if len(scores) == log_freq:
             print('\nIterations: {} Mean Score: {}\n'.format(iteration + 1, np.mean(scores)))
