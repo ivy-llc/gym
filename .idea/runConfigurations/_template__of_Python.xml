@@ -6,7 +6,7 @@
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
-    <option name="SDK_HOME" value="docker://ivydl/ivy-gym:latest-headless/python3" />
+    <option name="SDK_HOME" value="docker://unifyai/gym:latest/python3" />
     <option name="WORKING_DIRECTORY" value="/gym" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -41,12 +41,6 @@
             <option name="containerPath" value="/ivy/ivy" />
             <option name="editable" value="true" />
             <option name="hostPath" value="$PROJECT_DIR$/../ivy/ivy" />
-            <option name="readOnly" value="false" />
-          </DockerVolumeBindingImpl>
-          <DockerVolumeBindingImpl>
-            <option name="containerPath" value="/demo-utils/ivy_demo_utils" />
-            <option name="editable" value="true" />
-            <option name="hostPath" value="$PROJECT_DIR$/../demo-utils/ivy_demo_utils" />
             <option name="readOnly" value="false" />
           </DockerVolumeBindingImpl>
         </list>
