@@ -6,6 +6,7 @@ import numpy as np
 
 
 def loss_fn(env, initial_state, logits_in):
+    initial_state = ivy.to_native(initial_state, nested=True)
     obs = env.set_state(initial_state)
     score = ivy.array([0.])
     for logs_ in ivy.unstack(logits_in, axis=0):
