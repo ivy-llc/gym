@@ -60,7 +60,7 @@ class Reacher(gym.Env):
         # Goal proximity.
         x = ivy.sum(ivy.cos(self.angles), axis=-1)
         y = ivy.sum(ivy.sin(self.angles), axis=-1)
-        xy = ivy.concat([ivy.expand_dims(x, 0), ivy.expand_dims(y, 0)], axis=0)
+        xy = ivy.concat([ivy.expand_dims(x, axis=0), ivy.expand_dims(y, axis=0)], axis=0)
         rew = ivy.reshape(ivy.exp(-1 * ivy.sum((xy - self.goal_xy) ** 2, axis=-1)), (-1,))
         return ivy.mean(rew, axis=0, keepdims=True)
 
@@ -94,11 +94,11 @@ class Reacher(gym.Env):
 
     def reset(self):
         """ """
-        self.angles = ivy.random_uniform(-np.pi, np.pi, [self.num_joints])
+        self.angles = ivy.random_uniform(-np.pi, np.pi, shape=(self.num_joints,))
         self.angle_vels = ivy.random_uniform(
-            -1, 1, [self.num_joints])
+            -1, 1, shape=(self.num_joints,))
         self.goal_xy = ivy.random_uniform(
-            -self.num_joints, self.num_joints, [2])
+            -self.num_joints, self.num_joints, shape=(2,))
         return self.get_observation()
 
     def step(self, action):
@@ -192,8 +192,8 @@ class Reacher(gym.Env):
         for segment_tr, angle in zip(self.segment_trs, ivy.reshape(self.angles, (-1, 1))):
             segment_tr.set_rotation(ivy.to_numpy(angle)[0])
             segment_tr.set_translation(x, y)
-            x = ivy.to_numpy(x + ivy.cos(ivy.expand_dims(angle, 0))[0])[0]
-            y = ivy.to_numpy(y + ivy.sin(ivy.expand_dims(angle, 0))[0])[0]
+            x = ivy.to_numpy(x + ivy.cos(ivy.expand_dims(angle, axis=0))[0])[0]
+            y = ivy.to_numpy(y + ivy.sin(ivy.expand_dims(angle, axis=0))[0])[0]
         self.end_tr.set_translation(x, y)
         rew = ivy.to_numpy(self.get_reward())[0]
         self.end_geom.set_color(1 - rew, rew, 0.)

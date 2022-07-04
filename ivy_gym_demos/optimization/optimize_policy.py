@@ -11,10 +11,10 @@ class Policy(ivy.Module):
         self._linear0 = ivy.Linear(in_size, hidden_size)
         self._linear1 = ivy.Linear(hidden_size, hidden_size)
         self._linear2 = ivy.Linear(hidden_size, out_size)
-        ivy.Module.__init__(self, 'cpu')
+        ivy.Module.__init__(self, device='cpu')
 
     def _forward(self, x):
-        x = ivy.expand_dims(x, 0)
+        x = ivy.expand_dims(x, axis=0)
         x = ivy.tanh(self._linear0(x, v=self.v.linear0))
         x = ivy.tanh(self._linear1(x, v=self.v.linear1))
         return ivy.tanh(self._linear2(x, v=self.v.linear2))[0]
@@ -27,10 +27,11 @@ def loss_fn(env, initial_state, policy, v, steps):
         ac = policy(obs, v=v)
         obs, rew, _, _ = env.step(ac)
         score = score + rew
-    return -score[0]
+    return ivy.to_native(-score[0])
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
+    initial_state = ivy.to_native(initial_state, nested=True)
     loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
     policy.v = optimizer.step(policy.v, grads)
     return -ivy.reshape(loss, (1,))
@@ -54,7 +55,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     # compile loss function
     compiled_loss_fn = ivy.compile(lambda initial_state, pol_vs:
                                    loss_fn(env, initial_state, policy, pol_vs, steps),
-                                   False, example_inputs=[env.get_state(), policy.v])
+                                   False, example_inputs=[ivy.to_native(env.get_state(), nested=True), ivy.to_native(policy.v, nested=True)])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)

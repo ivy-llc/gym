@@ -100,10 +100,10 @@ class Swimmer(gym.Env):
     def reset(self):
         """ """
         self.urchin_xys = ivy.random_uniform(
-            -1, 1, (self.num_urchins, 2))
-        self.xy = ivy.random_uniform(-1, 1, (2,))
+            -1, 1, shape=(self.num_urchins, 2))
+        self.xy = ivy.random_uniform(-1, 1, shape=(2,))
         self.xy_vel = ivy.zeros((2,))
-        self.goal_xy = ivy.random_uniform(-1, 1, (2,))
+        self.goal_xy = ivy.random_uniform(-1, 1, shape=(2,))
         return self.get_observation()
 
     def step(self, action):

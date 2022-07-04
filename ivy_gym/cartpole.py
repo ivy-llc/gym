@@ -90,10 +90,10 @@ class CartPole(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        self.x = ivy.random_uniform(-1., 1., [1])
-        self.x_vel = ivy.random_uniform(-0.3, 0.3, [1])
-        self.angle = ivy.random_uniform(-np.pi, np.pi, [1])
-        self.angle_vel = ivy.random_uniform(-0.3, 0.3, [1])
+        self.x = ivy.random_uniform(-1., 1., shape=(1,))
+        self.x_vel = ivy.random_uniform(-0.3, 0.3, shape=(1,))
+        self.angle = ivy.random_uniform(-np.pi, np.pi, shape=(1,))
+        self.angle_vel = ivy.random_uniform(-0.3, 0.3, shape=(1,))
         return self.get_observation()
 
     def step(self, action):
