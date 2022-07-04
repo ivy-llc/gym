@@ -27,7 +27,7 @@ def loss_fn(env, initial_state, policy, v, steps):
         ac = policy(obs, v=v)
         obs, rew, _, _ = env.step(ac)
         score = score + rew
-    return -score[0]
+    return ivy.to_native(-score[0])
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, policy):
