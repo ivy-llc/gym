@@ -15,10 +15,12 @@ def loss_fn(env, initial_state, logits_in):
     return ivy.to_native(-score[0])
 
 
-def train_step(compiled_loss_fn, optimizer, initial_state, logits):
+# def train_step(compiled_loss_fn, optimizer, initial_state, logits):
+def train_step(env, optimizer, initial_state, logits):
     initial_state = ivy.to_native(initial_state, nested=True)
-    loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
-                                             ivy.Container({'l': logits}))
+    # loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
+                                             # ivy.Container({'l': logits}))
+    loss, grads = ivy.execute_with_gradients(lambda lgts: loss_fn(env, initial_state, lgts['l']), ivy.Container({'l': logits}))
     logits = optimizer.step(ivy.Container({'l': logits}), grads)['l']
     return -ivy.reshape(loss, (1,)), logits
 
@@ -26,7 +28,7 @@ def train_step(compiled_loss_fn, optimizer, initial_state, logits):
 def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq=1000, visualize=True, f=None, fw=None):
 
     # config
-    fw = ivy.choose_random_backend() if fw is None else fw
+    fw = ivy.choose_random_backend(excluded=['numpy']) if fw is None else fw
     ivy.set_backend(fw)
     f = ivy.get_backend(fw) if f is None else f
     ivy.seed(seed)
@@ -39,8 +41,8 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     logits = ivy.variable(ivy.random_uniform(-2, 2, shape=(steps, ac_dim)))
 
     # compile loss function
-    compiled_loss_fn = ivy.compile(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
-                                   False, example_inputs=[ivy.to_native(starting_state, nested=True), ivy.to_native(logits)])
+    # compiled_loss_fn = ivy.compile(lambda initial_state, lgts: loss_fn(env, initial_state, lgts),
+    #                                False, example_inputs=[ivy.to_native(starting_state, nested=True), ivy.to_native(logits)])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
@@ -60,7 +62,8 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
         env.set_state(starting_state)
         if iteration == 0:
             print('\nCompiling loss function for {} environment steps... This may take a while...\n'.format(steps))
-        score, logits = train_step(compiled_loss_fn, optimizer, starting_state, logits)
+        # score, logits = train_step(compiled_loss_fn, optimizer, starting_state, logits)
+        score, logits = train_step(env, optimizer, starting_state, logits)
         if iteration == 0:
             print('\nLoss function compiled!\n')
         print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
