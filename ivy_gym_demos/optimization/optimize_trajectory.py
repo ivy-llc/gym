@@ -7,7 +7,7 @@ import numpy as np
 
 def loss_fn(env, initial_state, logits_in):
     env.set_state(initial_state)
-    score = ivy.native_array([0.])
+    score = ivy.array([0.])
     for logs_ in ivy.unstack(logits_in, axis=0):
         ac = ivy.tanh(logs_)
         rew = env.step(ac)[1]
