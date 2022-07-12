@@ -7,12 +7,12 @@ import numpy as np
 
 def loss_fn(env, initial_state, logits_in):
     env.set_state(initial_state)
-    score = ivy.array([0.])
+    score = ivy.native_array([0.])
     for logs_ in ivy.unstack(logits_in, axis=0):
         ac = ivy.tanh(logs_)
         rew = env.step(ac)[1]
         score = score + rew
-    return ivy.to_native(-score[0])
+    return -score[0]
 
 
 # def train_step(compiled_loss_fn, optimizer, initial_state, logits):
