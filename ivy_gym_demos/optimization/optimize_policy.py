@@ -30,10 +30,11 @@ def loss_fn(env, initial_state, policy, v, steps):
     return ivy.to_native(-score[0])
 
 
-# def train_step(compiled_loss_fn, optimizer, initial_state, policy):
-def train_step(env, optimizer, initial_state, policy, steps):
-    # loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
-    loss, grads = ivy.execute_with_gradients(lambda pol_vs: loss_fn(env, initial_state, policy, pol_vs, steps), policy.v)
+def train_step(compiled_loss_fn, optimizer, policy):
+# def train_step(env, optimizer, initial_state, policy, steps):
+    # initial_state = ivy.to_native(initial_state, nested=True)
+    loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(pol_vs), policy.v)
+    # loss, grads = ivy.execute_with_gradients(lambda pol_vs: loss_fn(env, initial_state, policy, pol_vs, steps), policy.v)
     policy.v = optimizer.step(policy.v, grads)
     return -ivy.reshape(loss, (1,))
 
@@ -47,6 +48,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     ivy.seed(seed)
     env = getattr(ivy_gym, env_str)()
     starting_obs = env.reset()
+    starting_state = env.get_state()
 
     # policy
     in_size = starting_obs.shape[0]
@@ -54,9 +56,8 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     policy = Policy(in_size, ac_dim)
 
     # compile loss function
-    # compiled_loss_fn = ivy.compile(lambda initial_state, pol_vs:
-    #                                loss_fn(env, initial_state, policy, pol_vs, steps),
-    #                                False, example_inputs=[ivy.to_native(env.get_state(), nested=True), ivy.to_native(policy.v, nested=True)])
+    compiled_loss_fn = ivy.compile(lambda pol_vs: loss_fn(env, starting_state, policy, pol_vs, steps),
+                                   False, example_inputs=[policy.v])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
@@ -76,8 +77,8 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
         env.reset()
         if iteration == 0:
             print('\nCompiling loss function for {} environment steps... This may take a while...\n'.format(steps))
-        # score = train_step(compiled_loss_fn, optimizer, env.get_state(), policy)
-        score = train_step(env, optimizer, env.get_state(), policy, steps)
+        score = train_step(compiled_loss_fn, optimizer, policy)
+        # score = train_step(env, optimizer, env.get_state(), policy, steps)
         if iteration == 0:
             print('\nLoss function compiled!\n')
         print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
