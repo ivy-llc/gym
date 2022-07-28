@@ -212,7 +212,7 @@ For demos which optimize performance on the different tasks, we suggest you run 
 Run Through
 -----------
 
-The different environemnts can be visualized via a simple script,
+The different environments can be visualized via a simple script,
 which executes random motion for 250 steps in one of the environments.
 The script is available in the demos_ folder, as file ``run_through.py``.
 First, we select a random backend framework to use for the examples, from the options
