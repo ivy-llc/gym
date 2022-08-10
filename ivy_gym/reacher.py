@@ -94,11 +94,11 @@ class Reacher(gym.Env):
 
     def reset(self):
         """ """
-        self.angles = ivy.random_uniform(-np.pi, np.pi, shape=(self.num_joints,))
+        self.angles = ivy.random_uniform(low=-np.pi, high=np.pi, shape=(self.num_joints,))
         self.angle_vels = ivy.random_uniform(
-            -1, 1, shape=(self.num_joints,))
+            low=-1, high=1, shape=(self.num_joints,))
         self.goal_xy = ivy.random_uniform(
-            -self.num_joints, self.num_joints, shape=(2,))
+            low=-self.num_joints, high=self.num_joints, shape=(2,))
         return self.get_observation()
 
     def step(self, action):

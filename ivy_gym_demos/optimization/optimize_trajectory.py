@@ -35,7 +35,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
 
     # trajectory parameters
     ac_dim = env.action_space.shape[0]
-    logits = ivy.variable(ivy.random_uniform(-2, 2, shape=(steps, ac_dim)))
+    logits = ivy.variable(ivy.random_uniform(low=-2, high=2, shape=(steps, ac_dim)))
 
     # compile loss function
     compiled_loss_fn = ivy.compile(lambda lgts: loss_fn(env, starting_state, lgts),

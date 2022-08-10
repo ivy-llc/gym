@@ -82,7 +82,7 @@ class MountainCar(gym.Env):
 
     def reset(self):
         """ """
-        self.x = ivy.random_uniform(-0.9, -0.2, shape=(1,))
+        self.x = ivy.random_uniform(low=-0.9, high=-0.2, shape=(1,))
         self.x_vel = ivy.zeros((1,))
         return self.get_observation()
 

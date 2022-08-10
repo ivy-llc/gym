@@ -89,8 +89,8 @@ class Pendulum(gym.Env):
 
     def reset(self):
         """ """
-        self.angle = ivy.random_uniform(-np.pi, np.pi, shape=(1,))
-        self.angle_vel = ivy.random_uniform(-1., 1., shape=(1,))
+        self.angle = ivy.random_uniform(low=-np.pi, high=np.pi, shape=(1,))
+        self.angle_vel = ivy.random_uniform(low=-1., high=1., shape=(1,))
         return self.get_observation()
 
     def step(self, action):
