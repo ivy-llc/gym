@@ -6,13 +6,13 @@ RUN rm -rf ivy && \
     cd ivy && \
     cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
     cat optional.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
-    python3 setup.py develop --no-deps
+    python3 -m pip install --user -e .
 
 # Install Ivy Gym
 RUN git clone https://github.com/unifyai/gym && \
     cd gym && \
     cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin && \
-    python3 setup.py develop --no-deps
+    python3 -m pip install --user -e .
 
 COPY requirements.txt /
 RUN cat requirements.txt | grep -v "ivy-" | pip3 install --no-cache-dir -r /dev/stdin
