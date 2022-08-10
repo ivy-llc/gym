@@ -54,7 +54,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
 
     # compile loss function
     compiled_loss_fn = ivy.compile(lambda pol_vs: loss_fn(env, starting_state, policy, pol_vs, steps),
-                                   False, example_inputs=[policy.v])
+                                   dynamic=False, example_inputs=[policy.v])
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
