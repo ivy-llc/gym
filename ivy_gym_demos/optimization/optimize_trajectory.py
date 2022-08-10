@@ -27,7 +27,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     # config
     fw = ivy.choose_random_backend(excluded=['numpy']) if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.get_backend(fw) if f is None else f
+    f = ivy.get_backend(backend=fw) if f is None else f
     ivy.seed(seed_value=seed)
     env = getattr(ivy_gym, env_str)()
     env.reset()
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         raise Exception('Invalid framework selection. Numpy does not support auto-differentiation.\n'
                         'This demo involves gradient-based optimization, and so auto-diff is required.\n'
                         'Please choose a different backend framework.')
-    f = ivy.get_backend(fw)
+    f = ivy.get_backend(backend=fw)
     print('\nTraining for {} iterations.\n'.format(parsed_args.iters))
     main(parsed_args.env, parsed_args.steps, parsed_args.iters, parsed_args.lr, parsed_args.seed,
          parsed_args.log_freq, parsed_args.vis_freq, not parsed_args.no_visuals, f, fw)
