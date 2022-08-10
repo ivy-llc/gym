@@ -28,7 +28,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
     fw = ivy.choose_random_backend(excluded=['numpy']) if fw is None else fw
     ivy.set_backend(fw)
     f = ivy.get_backend(fw) if f is None else f
-    ivy.seed(seed)
+    ivy.seed(seed_value=seed)
     env = getattr(ivy_gym, env_str)()
     env.reset()
     starting_state = env.get_state()
