@@ -23,7 +23,7 @@ def _test_env(env):
     ac_dim = env.action_space.shape[0]
     env.reset()
     for _ in range(10):
-        ac = ivy.random_uniform(-1, 1, (ac_dim,))
+        ac = ivy.random_uniform(low=-1, high=1, shape=(ac_dim,))
         env.step(ac)
 
 

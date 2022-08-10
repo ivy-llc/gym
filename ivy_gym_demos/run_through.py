@@ -11,7 +11,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
 
     fw = ivy.choose_random_backend() if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.get_backend(fw) if f is None else f
+    f = ivy.get_backend(backend=fw) if f is None else f
 
     # get environment
     env = getattr(ivy_gym, env_str)()
@@ -20,7 +20,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
     env.reset()
     ac_dim = env.action_space.shape[0]
     for _ in range(250):
-        ac = ivy.random_uniform(-1, 1, shape=(ac_dim,))
+        ac = ivy.random_uniform(low=-1, high=1, shape=(ac_dim,))
         env.step(ac)
         if visualize:
             env.render()
@@ -41,5 +41,5 @@ if __name__ == '__main__':
                         help='which backend to use. Chooses a random backend if unspecified.')
     parsed_args = parser.parse_args()
     fw = parsed_args.backend
-    f = None if fw is None else ivy.get_backend(fw)
+    f = None if fw is None else ivy.get_backend(backend=fw)
     main(parsed_args.env, not parsed_args.no_visuals, f, fw)
