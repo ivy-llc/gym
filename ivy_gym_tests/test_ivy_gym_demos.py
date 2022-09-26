@@ -5,12 +5,11 @@ Collection of tests for ivy gym demos
 # global
 import pytest
 import ivy.functional.backends.jax
-import ivy.functional.backends.mxnet
 import ivy.functional.backends.tensorflow
 import ivy.functional.backends.torch
 import ivy_tests.test_ivy.helpers as helpers
 
-FWS = [ivy.functional.backends.jax, ivy.functional.backends.mxnet, ivy.functional.backends.tensorflow, ivy.functional.backends.torch]
+FWS = [ivy.functional.backends.jax, ivy.functional.backends.tensorflow, ivy.functional.backends.torch]
 
 
 @pytest.mark.parametrize(
