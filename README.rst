@@ -46,7 +46,7 @@ Contents
 * `Overview`_
 * `Run Through`_
 * `Optimization Demos`_
-* `Get Involed`_
+* `Get Involved`_
 
 Overview
 --------
@@ -342,7 +342,7 @@ The optimization iteration is shown in the bottom right, along with the step in 
         <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/master/img/externally_linked/ivy_gym/demo_b.gif?raw=true'>
     </p>
 
-Get Involed
+Get Involved
 -----------
 
 We hope the differentiable environments in this library are useful to a wide range of machine learning developers.
