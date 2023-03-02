@@ -1,5 +1,10 @@
 # global
+import os 
+os.environ["IVY_ROOT"] = ".ivy"
+
 import ivy
+import ivy.compiler.compiler as ic
+
 import ivy_gym
 import argparse
 import numpy as np
@@ -53,8 +58,8 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     policy = Policy(in_size, ac_dim)
 
     # compile loss function
-    compiled_loss_fn = ivy.compile(lambda pol_vs: loss_fn(env, starting_state, policy, pol_vs, steps),
-                                   dynamic=False, example_inputs=[policy.v])
+    compiled_loss_fn = ic.compile(lambda pol_vs: loss_fn(env, starting_state, policy, pol_vs, steps),
+                                   return_backend_compiled_fn=True)
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
