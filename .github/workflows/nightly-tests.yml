@@ -16,22 +16,11 @@ jobs:
           path: gym/ivy
           submodules: "recursive"
           persist-credentials: false
-
-      - name: Install Dependencies
-        continue-on-error: true
-        run: |
-          pip install --user -e gym/ivy
-          pip install -r gym/ivy/requirements/requirements.txt
-          pip install -r gym/ivy/requirements/optional.txt
-          pip install -r gym/requirements.txt
-          pip install pytest
       
       - name: Run Tests
-        env: 
-          USER_API_KEY: ${{secrets.USER_API_KEY}}
         run: |
           cd gym
           mkdir .ivy
           touch .ivy/key.pem
-          echo $USER_API_KEY >> .ivy/key.pem
-          python -m pytest ivy_gym_tests/
+          echo -n ${{ secrets.USER_API_KEY }} > .ivy/key.pem
+          docker run --rm -v `pwd`:/gym -v `pwd`/ivy:/ivy/ivy unifyai/gym:latest python3 -m pytest ivy_gym_tests/
