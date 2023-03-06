@@ -35,7 +35,7 @@ jobs:
           rm -rf .gitignore
           cd docs
           rsync -rav ../../ivy_doc_builder/docs/ .
-          bash _make_docs.sh --root_dir "../ivy_gym" --submodules_title "Environments"
+          bash _make_docs.sh --root_dir "../ivy_gym" 
           cp .nojekyll build/
           cd ../..
 
