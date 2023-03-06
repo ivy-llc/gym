@@ -11,6 +11,11 @@ jobs:
           persist-credentials: false
 
       - name: Run Tests
+        env: 
+          USER_API_KEY: ${{secrets.USER_API_KEY}}
         run: |
           cd gym
+          mkdir .ivy
+          touch .ivy/key.pem
+          echo $USER_API_KEY >> .ivy/key.pem
           docker run --rm -v `pwd`:/gym unifyai/gym:latest python3 -m pytest ivy_gym_tests/
