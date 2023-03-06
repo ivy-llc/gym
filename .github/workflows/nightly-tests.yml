@@ -4,6 +4,12 @@ jobs:
   run-nightly-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout 🛎️Ivy
+        uses: actions/checkout@v2
+        with:
+          path: ivy
+          persist-credentials: false
+
       - name: Checkout 🛎️Ivy Gym
         uses: actions/checkout@v2
         with:
@@ -18,4 +24,4 @@ jobs:
           mkdir .ivy
           touch .ivy/key.pem
           echo $USER_API_KEY >> .ivy/key.pem
-          docker run --rm -v `pwd`:/gym unifyai/gym:latest python3 -m pytest ivy_gym_tests/
+          docker run --rm -v `pwd`:/gym -v `pwd`/../ivy:/ivy/ivy unifyai/gym:latest python3 -m pytest ivy_gym_tests/
