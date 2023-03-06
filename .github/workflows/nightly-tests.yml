@@ -20,11 +20,11 @@ jobs:
       - name: Install Dependencies
         continue-on-error: true
         run: |
-          pip3 install --user -e gym/ivy
-          pip3 install -r gym/ivy/requirements/requirements.txt
-          pip3 install -r gym/ivy/requirements/optional.txt
-          pip3 install -r gym/requirements.txt
-          pip3 install pytest
+          pip install --user -e gym/ivy
+          pip install -r gym/ivy/requirements/requirements.txt
+          pip install -r gym/ivy/requirements/optional.txt
+          pip install -r gym/requirements.txt
+          pip install pytest
       
       - name: Run Tests
         env: 
@@ -34,4 +34,4 @@ jobs:
           mkdir .ivy
           touch .ivy/key.pem
           echo $USER_API_KEY >> .ivy/key.pem
-          python3 -m pytest ivy_gym_tests/
+          python -m pytest ivy_gym_tests/
