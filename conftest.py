@@ -1,7 +1,4 @@
 # global
-import os 
-os.environ["IVY_ROOT"] = ".ivy"
-
 import pytest
 from typing import Dict
 

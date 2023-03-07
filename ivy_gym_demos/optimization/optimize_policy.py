@@ -1,7 +1,4 @@
 # global
-import os 
-os.environ["IVY_ROOT"] = ".ivy"
-
 import ivy
 import ivy.compiler.compiler as ic
 
