@@ -70,7 +70,7 @@ def main(env_str, steps=100, iters=10000, lr=0.1, seed=0, log_freq=100, vis_freq
         if len(scores) == log_freq:
             print('\nIterations: {} Mean Score: {}\n'.format(iteration + 1, np.mean(scores)))
             scores.clear()
-    ivy.unset_backend()
+    ivy.previous_backend()
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
         if visualize:
             env.render()
     env.close()
-    ivy.unset_backend()
+    ivy.previous_backend()
 
     # message
     print('End of Run Through Demo!')
