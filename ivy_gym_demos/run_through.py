@@ -11,7 +11,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
 
     fw = ivy.choose_random_backend() if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.get_backend(backend=fw) if f is None else f
+    f = ivy.with_backend(backend=fw) if f is None else f
 
     # get environment
     env = getattr(ivy_gym, env_str)()
@@ -25,7 +25,7 @@ def main(env_str=None, visualize=True, f=None, fw=None):
         if visualize:
             env.render()
     env.close()
-    ivy.unset_backend()
+    ivy.previous_backend()
 
     # message
     print('End of Run Through Demo!')
@@ -41,5 +41,5 @@ if __name__ == '__main__':
                         help='which backend to use. Chooses a random backend if unspecified.')
     parsed_args = parser.parse_args()
     fw = parsed_args.backend
-    f = None if fw is None else ivy.get_backend(backend=fw)
+    f = None if fw is None else ivy.with_backend(backend=fw)
     main(parsed_args.env, not parsed_args.no_visuals, f, fw)

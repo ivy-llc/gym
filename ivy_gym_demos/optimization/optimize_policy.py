@@ -29,11 +29,11 @@ def loss_fn(env, initial_state, policy, v, steps):
         ac = policy(obs, v=v)
         obs, rew, _, _ = env.step(ac)
         score = score + rew
-    return ivy.to_native(-score[0])
+    return -score[0]
 
 
-def train_step(compiled_loss_fn, optimizer, policy):
-    loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(ivy.to_native(pol_vs, nested=True)), policy.v)
+def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
+    loss, grads = ivy.execute_with_gradients(lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v)
     policy.v = optimizer.step(policy.v, grads)
     return -ivy.reshape(loss, (1,))
 
@@ -43,11 +43,10 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     # config
     fw = ivy.choose_random_backend(excluded=['numpy']) if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.get_backend(backend=fw)
+    f = ivy.with_backend(backend=fw)
     ivy.seed(seed_value=seed)
     env = getattr(ivy_gym, env_str)()
     starting_obs = env.reset()
-    starting_state = env.get_state()
 
     # policy
     in_size = starting_obs.shape[0]
@@ -55,8 +54,8 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
     policy = Policy(in_size, ac_dim)
 
     # compile loss function
-    compiled_loss_fn = ic.compile(lambda pol_vs: loss_fn(env, starting_state, policy, pol_vs, steps),
-                                   return_backend_compiled_fn=True)
+    compiled_loss_fn = ic.compile(lambda initial_state, pol_vs:
+                                   loss_fn(env, initial_state, policy, pol_vs, steps))
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
@@ -76,7 +75,7 @@ def main(env_str, steps=100, iters=10000, lr=0.001, seed=0, log_freq=100, vis_fr
         env.reset()
         if iteration == 0:
             print('\nCompiling loss function for {} environment steps... This may take a while...\n'.format(steps))
-        score = train_step(compiled_loss_fn, optimizer, policy)
+        score = train_step(compiled_loss_fn, optimizer, env.get_state(), policy, f)
         if iteration == 0:
             print('\nLoss function compiled!\n')
         print('iteration {} score {}'.format(iteration, ivy.to_numpy(score).item()))
@@ -109,7 +108,7 @@ if __name__ == '__main__':
         raise Exception('Invalid framework selection. Numpy does not support auto-differentiation.\n'
                         'This demo involves gradient-based optimization, and so auto-diff is required.\n'
                         'Please choose a different backend framework.')
-    f = ivy.get_backend(backend=fw)
+    f = ivy.with_backend(backend=fw)
     print('\nTraining for {} iterations.\n'.format(parsed_args.iters))
     main(parsed_args.env, parsed_args.steps, parsed_args.iters, parsed_args.lr, parsed_args.seed,
          parsed_args.log_freq, parsed_args.vis_freq, not parsed_args.no_visuals, f, fw)
