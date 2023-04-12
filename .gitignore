@@ -14,3 +14,4 @@ log/
 chkpt/
 saved_model/
 .ivy
+.DS_Store
