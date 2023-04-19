@@ -10,17 +10,18 @@ import numpy as np
 def loss_fn(env, initial_state, logits_in):
     env.set_state(initial_state)
     score = ivy.array([0.])
-    for logs_ in ivy.unstack(logits_in, axis=0):
-        ac = ivy.tanh(logs_)
+    idx = 0
+    while idx < logits_in.shape[0]:
+        ac = ivy.tanh(logits_in[idx])
         rew = env.step(ac)[1]
         score = score + rew
+        idx += 1
     return -score[0]
 
 
 def train_step(compiled_loss_fn, optimizer, initial_state, logits):
-    loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts['l']),
-                                             ivy.Container({'l': logits}))
-    logits = optimizer.step(ivy.Container({'l': logits}), grads)['l']
+    loss, grads = ivy.execute_with_gradients(lambda lgts: compiled_loss_fn(initial_state, lgts), logits)
+    logits = optimizer.step(logits, grads)
     return -ivy.reshape(loss, (1,)), logits
 
 
