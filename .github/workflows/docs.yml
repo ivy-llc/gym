@@ -11,3 +11,5 @@ jobs:
     name: Update docs
     uses: unifyai/workflows/.github/workflows/docs.yml@master
     secrets: inherit
+    with:
+      package-dependencies: 'freeglut3-dev gdk libopenal'
