@@ -1,4 +1,3 @@
 gym
-GLU  # mod_name=pyglet
 pyglet
 ivy-core # mod_name=ivy
