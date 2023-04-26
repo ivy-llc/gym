@@ -10,25 +10,21 @@ import numpy as np
 # noinspection PyAttributeOutsideInit
 class Pendulum(gym.Env):
     """ """
-    metadata = {
-        'render.modes': ['human', 'rgb_array'],
-        'video.frames_per_second': 30
-    }
+
+    metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self):  # noqa
         """
         Initialize Pendulum environment
         """
-        self.torque_scale = 1.
+        self.torque_scale = 1.0
         self.g = 9.8
         self.dt = 0.05
-        self.m = 1.
-        self.l = 1.
-        self.action_space = gym.spaces.Box(
-            low=-1, high=1, shape=[1], dtype=np.float32)
-        high = np.array([1., 1., np.inf], dtype=np.float32)
-        self.observation_space = gym.spaces.Box(
-            low=-high, high=high, dtype=np.float32)
+        self.m = 1.0
+        self.l = 1.0
+        self.action_space = gym.spaces.Box(low=-1, high=1, shape=[1], dtype=np.float32)
+        high = np.array([1.0, 1.0, np.inf], dtype=np.float32)
+        self.observation_space = gym.spaces.Box(low=-high, high=high, dtype=np.float32)
         self.viewer = None
         self._logged_headless_message = False
 
@@ -42,9 +38,8 @@ class Pendulum(gym.Env):
 
         """
         return ivy.concat(
-            (ivy.cos(self.angle), ivy.sin(self.angle),
-             self.angle_vel),
-            axis=-1)
+            (ivy.cos(self.angle), ivy.sin(self.angle), self.angle_vel), axis=-1
+        )
 
     def get_reward(self):
         """Get reward based on current state
@@ -90,7 +85,7 @@ class Pendulum(gym.Env):
     def reset(self):
         """ """
         self.angle = ivy.random_uniform(low=-np.pi, high=np.pi, shape=(1,))
-        self.angle_vel = ivy.random_uniform(low=-1., high=1., shape=(1,))
+        self.angle_vel = ivy.random_uniform(low=-1.0, high=1.0, shape=(1,))
         return self.get_observation()
 
     def step(self, action):
@@ -104,15 +99,16 @@ class Pendulum(gym.Env):
         action = action * self.torque_scale
 
         angle_acc = (
-            -3 * self.g / (2 * self.l) * ivy.sin(self.angle + np.pi) +
-            3. / (self.m * self.l ** 2) * action)
+            -3 * self.g / (2 * self.l) * ivy.sin(self.angle + np.pi)
+            + 3.0 / (self.m * self.l**2) * action
+        )
 
         self.angle_vel = self.angle_vel + self.dt * angle_acc
         self.angle = self.angle + self.dt * self.angle_vel
 
         return self.get_observation(), self.get_reward(), False, {}
 
-    def render(self, mode='human'):
+    def render(self, mode="human"):
         """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
@@ -144,8 +140,10 @@ class Pendulum(gym.Env):
                 from gym.envs.classic_control import rendering
             except:
                 if not self._logged_headless_message:
-                    print('Unable to connect to display. Running the Ivy environment '
-                          'in headless mode...')
+                    print(
+                        "Unable to connect to display. Running the Ivy environment "
+                        "in headless mode..."
+                    )
                     self._logged_headless_message = True
                 return
 
@@ -153,22 +151,22 @@ class Pendulum(gym.Env):
             self.viewer.set_bounds(-2.2, 2.2, -2.2, 2.2)
 
             # Pole.
-            self.pole_geom = rendering.make_capsule(1, .2)
-            self.pole_geom.set_color(.8, .3, .3)
+            self.pole_geom = rendering.make_capsule(1, 0.2)
+            self.pole_geom.set_color(0.8, 0.3, 0.3)
             self.pole_transform = rendering.Transform()
             self.pole_geom.add_attr(self.pole_transform)
             self.viewer.add_geom(self.pole_geom)
 
             # Axle.
             axle = rendering.make_circle(0.05)
-            axle.set_color(0., 0., 0.)
+            axle.set_color(0.0, 0.0, 0.0)
             self.viewer.add_geom(axle)
 
         self.pole_transform.set_rotation(ivy.to_numpy(self.angle)[0] + np.pi / 2)
         rew = ivy.to_numpy(self.get_reward())[0]
-        self.pole_geom.set_color(1 - rew, rew, 0.)
+        self.pole_geom.set_color(1 - rew, rew, 0.0)
 
-        return self.viewer.render(return_rgb_array=mode == 'rgb_array')
+        return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
     def close(self):
         """Close environment."""

@@ -15,7 +15,12 @@ from ivy_gym.pendulum import Pendulum
 from ivy_gym.reacher import Reacher
 from ivy_gym.swimmer import Swimmer
 
-FWS = [ivy.functional.backends.jax, ivy.functional.backends.numpy, ivy.functional.backends.tensorflow, ivy.functional.backends.torch]
+FWS = [
+    ivy.functional.backends.jax,
+    ivy.functional.backends.numpy,
+    ivy.functional.backends.tensorflow,
+    ivy.functional.backends.torch,
+]
 
 
 def _test_env(env):

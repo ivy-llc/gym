@@ -10,20 +10,18 @@ import numpy as np
 # noinspection PyAttributeOutsideInit
 class MountainCar(gym.Env):
     """ """
-    metadata = {
-        'render.modes': ['human', 'rgb_array'],
-        'video.frames_per_second': 30
-    }
+
+    metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self):  # noqa
         """
         Initialize MountainCar environment
         """
-        self.torque_scale = 3.
+        self.torque_scale = 3.0
         self.g = 9.8
         self.dt = 0.02
         self.goal_x = ivy.array([0.45])
-        self.action_space = gym.spaces.Box(-1., 1., [1], np.float32)
+        self.action_space = gym.spaces.Box(-1.0, 1.0, [1], np.float32)
         high = np.array([np.inf, np.inf], dtype=np.float32)
         self.observation_space = gym.spaces.Box(-high, high, dtype=np.float32)
         self.viewer = None
@@ -110,7 +108,7 @@ class MountainCar(gym.Env):
         """
         return ivy.sin(3 * xs) * 0.45 + 0.55
 
-    def render(self, mode='human'):
+    def render(self, mode="human"):
         """Renders the environment.
         The set of supported modes varies per environment. (And some
         environments do not support rendering at all.) By convention,
@@ -151,8 +149,10 @@ class MountainCar(gym.Env):
                 from gym.envs.classic_control import rendering
             except:
                 if not self._logged_headless_message:
-                    print('Unable to connect to display. Running the Ivy environment '
-                          'in headless mode...')
+                    print(
+                        "Unable to connect to display. Running the Ivy environment "
+                        "in headless mode..."
+                    )
                     self._logged_headless_message = True
                 return
 
@@ -161,8 +161,10 @@ class MountainCar(gym.Env):
             # Track.
             xs = ivy.linspace(x_min, x_max, 100)
             ys = self._height(xs)
-            xys = list((ivy.to_numpy(xt).item(), ivy.to_numpy(yt).item())
-                       for xt, yt in zip((xs - x_min) * scale, ys * scale))
+            xys = list(
+                (ivy.to_numpy(xt).item(), ivy.to_numpy(yt).item())
+                for xt, yt in zip((xs - x_min) * scale, ys * scale)
+            )
             self.track = rendering.make_polyline(xys)
             self.track.set_linewidth(2)
             self.viewer.add_geom(self.track)
@@ -170,10 +172,8 @@ class MountainCar(gym.Env):
             # Car.
             clearance = 10
             l, r, t, b = -car_width / 2, car_width / 2, car_height, 0
-            self.car_geom = rendering.FilledPolygon(
-                [(l, b), (l, t), (r, t), (r, b)])
-            self.car_geom.add_attr(
-                rendering.Transform(translation=(0, clearance)))
+            self.car_geom = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            self.car_geom.add_attr(rendering.Transform(translation=(0, clearance)))
             self.car_tr = rendering.Transform()
             self.car_geom.add_attr(self.car_tr)
             self.viewer.add_geom(self.car_geom)
@@ -182,12 +182,14 @@ class MountainCar(gym.Env):
             front_wheel = rendering.make_circle(car_height / 2.5)
             front_wheel.set_color(0.5, 0.5, 0.5)
             front_wheel.add_attr(
-                rendering.Transform(translation=(car_width / 4, clearance)))
+                rendering.Transform(translation=(car_width / 4, clearance))
+            )
             front_wheel.add_attr(self.car_tr)
             self.viewer.add_geom(front_wheel)
             back_wheel = rendering.make_circle(car_height / 2.5)
             back_wheel.add_attr(
-                rendering.Transform(translation=(-car_width / 4, clearance)))
+                rendering.Transform(translation=(-car_width / 4, clearance))
+            )
             back_wheel.add_attr(self.car_tr)
             back_wheel.set_color(0.5, 0.5, 0.5)
             self.viewer.add_geom(back_wheel)
@@ -199,18 +201,24 @@ class MountainCar(gym.Env):
             flagpole = rendering.Line((flag_x, flagy_y1), (flag_x, flagy_y2))
             self.viewer.add_geom(flagpole)
             flag = rendering.FilledPolygon(
-                [(flag_x, flagy_y2), (flag_x, flagy_y2 - 10),
-                 (flag_x + 25, flagy_y2 - 5)])
-            flag.set_color(0.4, 0.6, 1.)
+                [
+                    (flag_x, flagy_y2),
+                    (flag_x, flagy_y2 - 10),
+                    (flag_x + 25, flagy_y2 - 5),
+                ]
+            )
+            flag.set_color(0.4, 0.6, 1.0)
             self.viewer.add_geom(flag)
 
         self.car_tr.set_translation(
-            (ivy.to_numpy(self.x)[0] - x_min) * scale, ivy.to_numpy(self._height(self.x))[0] * scale)
+            (ivy.to_numpy(self.x)[0] - x_min) * scale,
+            ivy.to_numpy(self._height(self.x))[0] * scale,
+        )
         self.car_tr.set_rotation(ivy.to_numpy(ivy.cos(3 * self.x))[0])
         rew = ivy.to_numpy(self.get_reward()).item()
-        self.car_geom.set_color(1 - rew, rew, 0.)
+        self.car_geom.set_color(1 - rew, rew, 0.0)
 
-        return self.viewer.render(return_rgb_array=mode == 'rgb_array')
+        return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
     def close(self):
         """Close environment."""
