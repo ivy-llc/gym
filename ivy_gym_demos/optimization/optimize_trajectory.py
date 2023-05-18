@@ -1,6 +1,7 @@
 # global
 import ivy
-import ivy.compiler.compiler as ic
+
+# import ivy.compiler.compiler as ic
 
 import ivy_gym
 import argparse
@@ -53,9 +54,10 @@ def main(
     logits = ivy.random_uniform(low=-2, high=2, shape=(steps, ac_dim))
 
     # compile loss function
-    compiled_loss_fn = ic.compile(
-        lambda initial_state, lgts: loss_fn(env, initial_state, lgts)
-    )
+    # compiled_loss_fn = ic.compile(
+    #     lambda initial_state, lgts: loss_fn(env, initial_state, lgts)
+    # )
+    compiled_loss_fn = lambda initial_state, lgts: loss_fn(env, initial_state, lgts)
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
@@ -74,9 +76,8 @@ def main(
         env.set_state(starting_state)
         if iteration == 0:
             print(
-                "\nCompiling loss function for {} environment steps... This may take a while...\n".format(
-                    steps
-                )
+                "\nCompiling loss function "
+                "for {} environment steps... This may take a while...\n".format(steps)
             )
         score, logits = train_step(compiled_loss_fn, optimizer, starting_state, logits)
         if iteration == 0:
@@ -124,8 +125,10 @@ if __name__ == "__main__":
         fw = ivy.choose_random_backend(excluded=["numpy"])
     if fw == "numpy":
         raise Exception(
-            "Invalid framework selection. Numpy does not support auto-differentiation.\n"
-            "This demo involves gradient-based optimization, and so auto-diff is required.\n"
+            "Invalid framework selection. "
+            "Numpy does not support auto-differentiation.\n"
+            "This demo involves gradient-based optimization, "
+            "and so auto-diff is required.\n"
             "Please choose a different backend framework."
         )
     f = ivy.with_backend(backend=fw)
