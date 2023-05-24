@@ -26,5 +26,5 @@ jobs:
 
     - name: Build and push Dockerfile
       run: |
-        docker build . --file Dockerfile --tag unifyai/gym:latest
+        docker build . --file docker/Dockerfile --tag unifyai/gym:latest
         docker push unifyai/gym:latest
