@@ -8,8 +8,6 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class Reacher(gym.Env):
-    """ """
-
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self, num_joints=2):  # noqa
@@ -99,7 +97,6 @@ class Reacher(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        """ """
         self.angles = ivy.random_uniform(
             low=-np.pi, high=np.pi, shape=(self.num_joints,)
         )
@@ -152,7 +149,7 @@ class Reacher(gym.Env):
             # noinspection PyBroadException
             try:
                 from gym.envs.classic_control import rendering
-            except:
+            except Exception:
                 if not self._logged_headless_message:
                     print(
                         "Unable to connect to display. Running the Ivy environment "

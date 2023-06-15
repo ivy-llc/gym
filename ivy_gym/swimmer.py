@@ -1,5 +1,7 @@
-"""Path finding task.
-A fish needs to reach a goal location while avoiding urchins."""
+"""
+Path finding task.
+A fish needs to reach a goal location while avoiding urchins.
+"""
 
 import ivy
 import gym
@@ -12,8 +14,6 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class Swimmer(gym.Env):
-    """ """
-
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self, num_urchins=5):  # noqa
@@ -99,7 +99,6 @@ class Swimmer(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        """ """
         self.urchin_xys = ivy.random_uniform(
             low=-1, high=1, shape=(self.num_urchins, 2)
         )
@@ -150,7 +149,7 @@ class Swimmer(gym.Env):
             # noinspection PyBroadException
             try:
                 from gym.envs.classic_control import rendering
-            except:
+            except Exception:
                 if not self._logged_headless_message:
                     print(
                         "Unable to connect to display. Running the Ivy environment "
@@ -161,8 +160,6 @@ class Swimmer(gym.Env):
             from pyglet import gl
 
             class _StarGeom(rendering.Geom):
-                """ """
-
                 def __init__(self, r1, r2, n):
                     super().__init__()
                     self.r1 = r1
@@ -170,7 +167,6 @@ class Swimmer(gym.Env):
                     self.n = n
 
                 def render1(self):
-                    """ """
                     n = self.n * 2
                     for i in range(0, n, 2):
                         gl.glBegin(gl.GL_TRIANGLES)
@@ -188,14 +184,11 @@ class Swimmer(gym.Env):
                     gl.glEnd()
 
             class _FishGeom(rendering.Geom):
-                """ """
-
                 def __init__(self):
                     super().__init__()
                     self.color = 0.0, 0.0, 0.0
 
                 def render1(self):
-                    """ """
                     points = [
                         [0.08910714285714288, -0.009017857142857133],
                         [0.13910714285714287, -0.04026785714285712],

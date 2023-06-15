@@ -1,5 +1,7 @@
-"""Pendulum task adapted from:
-https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py"""
+"""
+Pendulum task adapted from:
+https://github.com/openai/gym/blob/master/gym/envs/classic_control/pendulum.py
+"""
 
 # global
 import ivy
@@ -9,8 +11,6 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class Pendulum(gym.Env):
-    """ """
-
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self):  # noqa
@@ -21,7 +21,7 @@ class Pendulum(gym.Env):
         self.g = 9.8
         self.dt = 0.05
         self.m = 1.0
-        self.l = 1.0
+        self.ll = 1.0
         self.action_space = gym.spaces.Box(low=-1, high=1, shape=[1], dtype=np.float32)
         high = np.array([1.0, 1.0, np.inf], dtype=np.float32)
         self.observation_space = gym.spaces.Box(low=-high, high=high, dtype=np.float32)
@@ -83,14 +83,12 @@ class Pendulum(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        """ """
         self.angle = ivy.random_uniform(low=-np.pi, high=np.pi, shape=(1,))
         self.angle_vel = ivy.random_uniform(low=-1.0, high=1.0, shape=(1,))
         return self.get_observation()
 
     def step(self, action):
         """
-
         Parameters
         ----------
         action
@@ -99,8 +97,8 @@ class Pendulum(gym.Env):
         action = action * self.torque_scale
 
         angle_acc = (
-            -3 * self.g / (2 * self.l) * ivy.sin(self.angle + np.pi)
-            + 3.0 / (self.m * self.l**2) * action
+            -3 * self.g / (2 * self.ll) * ivy.sin(self.angle + np.pi)
+            + 3.0 / (self.m * self.ll**2) * action
         )
 
         self.angle_vel = self.angle_vel + self.dt * angle_acc
@@ -138,7 +136,7 @@ class Pendulum(gym.Env):
             # noinspection PyBroadException
             try:
                 from gym.envs.classic_control import rendering
-            except:
+            except Exception:
                 if not self._logged_headless_message:
                     print(
                         "Unable to connect to display. Running the Ivy environment "

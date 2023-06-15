@@ -1,5 +1,7 @@
-"""Mountain-car task adapted from:
-https://github.com/openai/gym/blob/master/gym/envs/classic_control/mountain_car.py"""
+"""
+Mountain-car task adapted from:
+https://github.com/openai/gym/blob/master/gym/envs/classic_control/mountain_car.py
+"""
 
 # global
 import ivy
@@ -9,8 +11,6 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class MountainCar(gym.Env):
-    """ """
-
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self):  # noqa
@@ -79,7 +79,6 @@ class MountainCar(gym.Env):
         return self.get_observation()
 
     def reset(self):
-        """ """
         self.x = ivy.random_uniform(low=-0.9, high=-0.2, shape=(1,))
         self.x_vel = ivy.zeros((1,))
         return self.get_observation()
@@ -147,7 +146,7 @@ class MountainCar(gym.Env):
             # noinspection PyBroadException
             try:
                 from gym.envs.classic_control import rendering
-            except:
+            except Exception:
                 if not self._logged_headless_message:
                     print(
                         "Unable to connect to display. Running the Ivy environment "

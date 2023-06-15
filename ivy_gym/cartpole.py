@@ -1,5 +1,7 @@
-"""Cart-pole task adapted from:
-https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py"""
+"""
+Cart-pole task adapted from:
+https://github.com/openai/gym/blob/master/gym/envs/classic_control/cartpole.py
+"""
 
 # global
 import ivy
@@ -9,8 +11,6 @@ import numpy as np
 
 # noinspection PyAttributeOutsideInit
 class CartPole(gym.Env):
-    """ """
-
     metadata = {"render.modes": ["human", "rgb_array"], "video.frames_per_second": 30}
 
     def __init__(self):  # noqa
@@ -166,7 +166,7 @@ class CartPole(gym.Env):
             # noinspection PyBroadException
             try:
                 from gym.envs.classic_control import rendering
-            except:
+            except Exception:
                 if not self._logged_headless_message:
                     print(
                         "Unable to connect to display. Running the Ivy environment "
@@ -183,22 +183,22 @@ class CartPole(gym.Env):
             self.viewer.add_geom(track)
 
             # Cart.
-            l = -cart_width / 2
+            ll = -cart_width / 2
             r = cart_width / 2
             t = cart_height / 2
             b = -cart_height / 2
-            cart_geom = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            cart_geom = rendering.FilledPolygon([(ll, b), (ll, t), (r, t), (r, b)])
             self.cart_tr = rendering.Transform()
             cart_geom.add_attr(self.cart_tr)
             cart_geom.set_color(0.0, 0.0, 0.0)
             self.viewer.add_geom(cart_geom)
 
             # Pole.
-            l = -pole_width / 2
+            ll = -pole_width / 2
             r = pole_width / 2
             t = pole_len - pole_width / 2
             b = -pole_width / 2
-            self.pole_geom = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            self.pole_geom = rendering.FilledPolygon([(ll, b), (ll, t), (r, t), (r, b)])
             self.pole_tr = rendering.Transform(translation=(0, 0))
             self.pole_geom.add_attr(self.pole_tr)
             self.pole_geom.add_attr(self.cart_tr)

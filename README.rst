@@ -223,7 +223,7 @@ and use this to set the ivy backend framework.
 
 .. code-block:: python
 
-    import ivy
+    import  ivy
     fw = ivy.choose_random_backend() 
     ivy.set_backend(fw)
 
