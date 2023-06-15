@@ -20,7 +20,8 @@ FWS = [
 )
 def test_demo_run_through(env, device, f, fw):
     if fw in ["numpy", "tensorflow_graph"]:
-        # numpy does not support gradients, and demo compiles already, so no need to use tensorflow_graph
+        # numpy does not support gradients,
+        # and demo compiles already, so no need to use tensorflow_graph
         pytest.skip()
     from ivy_gym_demos.run_through import main
 
@@ -32,7 +33,8 @@ def test_demo_run_through(env, device, f, fw):
 )
 def test_demo_optimize_trajectory(env, device, f, fw):
     if fw in ["numpy", "tensorflow_graph"]:
-        # numpy does not support gradients, and demo compiles already, so no need to use tensorflow_graph
+        # numpy does not support gradients,
+        # and demo compiles already, so no need to use tensorflow_graph
         pytest.skip()
     from ivy_gym_demos.optimization.optimize_trajectory import main
 
@@ -44,7 +46,8 @@ def test_demo_optimize_trajectory(env, device, f, fw):
 )
 def test_demo_optimize_policy(env, device, f, fw):
     if fw in ["numpy", "tensorflow_graph"]:
-        # numpy does not support gradients, and demo compiles already, so no need to use tensorflow_graph
+        # numpy does not support gradients,
+        # and demo compiles already, so no need to use tensorflow_graph
         pytest.skip()
     from ivy_gym_demos.optimization.optimize_policy import main
 
