@@ -67,8 +67,7 @@ def main(
 
     # compile loss function
     compiled_loss_fn = ic.compile(
-        lambda initial_state, pol_vs:
-    loss_fn(env, initial_state, policy, pol_vs, steps)
+        lambda initial_state, pol_vs: loss_fn(env, initial_state, policy, pol_vs, steps)
     )
 
     # optimizer
