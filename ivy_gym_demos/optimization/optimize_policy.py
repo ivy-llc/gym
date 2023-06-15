@@ -70,9 +70,6 @@ def main(
         lambda initial_state, pol_vs:
     loss_fn(env, initial_state, policy, pol_vs, steps)
     )
-    # compiled_loss_fn = lambda initial_state, pol_vs: loss_fn(
-    #     env, initial_state, policy, pol_vs, steps
-    # )
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)

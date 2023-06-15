@@ -57,7 +57,6 @@ def main(
     compiled_loss_fn = ic.compile(
         lambda initial_state, lgts: loss_fn(env, initial_state, lgts)
     )
-    # compiled_loss_fn = lambda initial_state, lgts: loss_fn(env, initial_state, lgts)
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
