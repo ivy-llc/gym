@@ -1,7 +1,7 @@
 # global
 import ivy
 
-# import ivy.compiler.compiler as ic
+import ivy.compiler.compiler as ic
 
 import ivy_gym
 import argparse
@@ -66,13 +66,13 @@ def main(
     policy = Policy(in_size, ac_dim)
 
     # compile loss function
-    # compiled_loss_fn = ic.compile(
-    #     lambda initial_state, pol_vs:
-    # loss_fn(env, initial_state, policy, pol_vs, steps)
-    # )
-    compiled_loss_fn = lambda initial_state, pol_vs: loss_fn(
-        env, initial_state, policy, pol_vs, steps
+    compiled_loss_fn = ic.compile(
+        lambda initial_state, pol_vs:
+    loss_fn(env, initial_state, policy, pol_vs, steps)
     )
+    # compiled_loss_fn = lambda initial_state, pol_vs: loss_fn(
+    #     env, initial_state, policy, pol_vs, steps
+    # )
 
     # optimizer
     optimizer = ivy.Adam(lr=lr)
