@@ -223,7 +223,7 @@ and use this to set the ivy backend framework.
 
 .. code-block:: python
 
-    import  ivy
+    import ivy
     fw = ivy.choose_random_backend() 
     ivy.set_backend(fw)
 
@@ -240,7 +240,7 @@ choosing from the options ``CartPole``, ``Pendulum``, ``MountainCar``, ``Reacher
     env.reset()
     ac_dim = env.action_space.shape[0]
     for _ in range(250):
-        ac = ivy.random_uniform(-1, 1, (ac_dim,))
+        ac = ivy.random_uniform(low=-1, high=1, shape=(ac_dim,))
         env.step(ac)
         env.render()
 
