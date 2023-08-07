@@ -32,7 +32,7 @@ def loss_fn(env, initial_state, policy, v, steps):
     return -score[0]
 
 
-def train_step(compiled_loss_fn, optimizer, initial_state, policy, f):
+def train_step(compiled_loss_fn, optimizer, initial_state, policy):
     loss, grads = ivy.execute_with_gradients(
         lambda pol_vs: compiled_loss_fn(initial_state, pol_vs), policy.v
     )
@@ -49,13 +49,11 @@ def main(
     log_freq=100,
     vis_freq=1000,
     visualize=True,
-    f=None,
     fw=None,
 ):
     # config
     fw = ivy.choose_random_backend(excluded=["numpy"]) if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.with_backend(backend=fw)
     ivy.seed(seed_value=seed)
     env = getattr(ivy_gym, env_str)()
     starting_obs = env.reset()
@@ -90,7 +88,7 @@ def main(
                 "\nCompiling loss function "
                 "for {} environment steps... This may take a while...\n".format(steps)
             )
-        score = train_step(compiled_loss_fn, optimizer, env.get_state(), policy, f)
+        score = train_step(compiled_loss_fn, optimizer, env.get_state(), policy)
         if iteration == 0:
             print("\nLoss function compiled!\n")
         print("iteration {} score {}".format(iteration, ivy.to_numpy(score).item()))
@@ -141,7 +139,6 @@ if __name__ == "__main__":
             "and so auto-diff is required.\n"
             "Please choose a different backend framework."
         )
-    f = ivy.with_backend(backend=fw)
     print("\nTraining for {} iterations.\n".format(parsed_args.iters))
     main(
         parsed_args.env,
@@ -152,6 +149,5 @@ if __name__ == "__main__":
         parsed_args.log_freq,
         parsed_args.vis_freq,
         not parsed_args.no_visuals,
-        f,
         fw,
     )

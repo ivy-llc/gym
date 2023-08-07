@@ -37,13 +37,11 @@ def main(
     log_freq=100,
     vis_freq=1000,
     visualize=True,
-    f=None,
     fw=None,
 ):
     # config
     fw = ivy.choose_random_backend(excluded=["numpy"]) if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.with_backend(backend=fw) if f is None else f
     ivy.seed(seed_value=seed)
     env = getattr(ivy_gym, env_str)()
     env.reset()
@@ -130,7 +128,6 @@ if __name__ == "__main__":
             "and so auto-diff is required.\n"
             "Please choose a different backend framework."
         )
-    f = ivy.with_backend(backend=fw)
     print("\nTraining for {} iterations.\n".format(parsed_args.iters))
     main(
         parsed_args.env,
@@ -141,6 +138,5 @@ if __name__ == "__main__":
         parsed_args.log_freq,
         parsed_args.vis_freq,
         not parsed_args.no_visuals,
-        f,
         fw,
     )

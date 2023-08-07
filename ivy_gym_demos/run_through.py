@@ -4,13 +4,12 @@ import argparse
 import ivy_gym
 
 
-def main(env_str=None, visualize=True, f=None, fw=None):
+def main(env_str=None, visualize=True, fw=None):
     # Framework Setup #
     # ----------------#
 
     fw = ivy.choose_random_backend() if fw is None else fw
     ivy.set_backend(fw)
-    f = ivy.with_backend(backend=fw) if f is None else f
 
     # get environment
     env = getattr(ivy_gym, env_str)()
@@ -50,5 +49,4 @@ if __name__ == "__main__":
     )
     parsed_args = parser.parse_args()
     fw = parsed_args.backend
-    f = None if fw is None else ivy.with_backend(backend=fw)
-    main(parsed_args.env, not parsed_args.no_visuals, f, fw)
+    main(parsed_args.env, not parsed_args.no_visuals, fw)
