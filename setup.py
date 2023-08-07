@@ -114,17 +114,17 @@ long_description = "\n".join(lines)
 
 setup(
     name="ivy-gym",
-    version="1.1.9",
-    author="Ivy Team",
-    author_email="ivydl.team@gmail.com",
+    version="0.0.1.post0",
+    author="Unify",
+    author_email="hello@unify.ai",
     description=(
         "Fully differentiable reinforcement learning environments, " "written in Ivy."
     ),
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://lets-unify.ai/gym",
+    url="https://unify.ai/docs/gym",
     project_urls={
-        "Docs": "https://lets-unify.ai/gym/",
+        "Docs": "https://unify.ai/docs/gym/",
         "Source": "https://github.com/unifyai/gym",
     },
     packages=setuptools.find_packages(),
