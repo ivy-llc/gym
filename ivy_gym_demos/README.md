@@ -77,7 +77,7 @@ cd ~/ivy_gym/ivy_gym_demos
 Example output is given below:
 
 <p align="center">
-    <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/master/img/externally_linked/ivy_gym/demo_a.gif?raw=true'>
+    <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/main/img/externally_linked/ivy_gym/demo_a.gif?raw=true'>
 </p>
 
 ### Policy Optimization
@@ -92,7 +92,7 @@ cd ~/ivy_gym/ivy_gym_demos
 Example output is given below:
 
 <p align="center">
-    <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/master/img/externally_linked/ivy_gym/demo_b.gif?raw=true'>
+    <img width="75%" style="display: block;" src='https://github.com/unifyai/unifyai.github.io/blob/main/img/externally_linked/ivy_gym/demo_b.gif?raw=true'>
 </p>
 
 ## Get Involved
