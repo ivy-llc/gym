@@ -58,7 +58,7 @@ Contents
 Overview
 --------
 
-.. _docs: https://lets-unify.ai/gym
+.. _docs: https://unify.ai/docs/gym/
 
 **What is Ivy Gym?**
 
