@@ -1,3 +1,5 @@
+.. titile:: Ivy Gym
+
 .. include:: ../README.rst
 
 .. autosummary::
