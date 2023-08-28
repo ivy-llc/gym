@@ -1,4 +1,4 @@
-.. titile:: Ivy Gym
+.. title:: Ivy Gym
 
 .. include:: ../README.rst
 
